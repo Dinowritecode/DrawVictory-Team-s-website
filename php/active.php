@@ -4,16 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <script src="../javascript/jquery-3.5.1.min.js"></script>
     <link rel="shortcut icon" href="../picture/logo.ico" type="image/x-ico"/>
-    <link rel="stylesheet" href="../crooper/cropper.min.css">
     <link href="../css/active.css" rel="stylesheet">
-    <script src="../crooper/cropper.min.js"></script>
     <script src="../javascript/alert.js"></script>
     <script src="../javascript/picture.js"></script>
+    <script src="../javascript/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="../crooper/cropper.min.css">
+    <script src="../crooper/cropper.min.js"></script>
+    <script src="../javascript/cut.js"></script>
     <title>账户激活</title>
 </head>
 <body>
+<div class='box'><img id='image' width='400px' src='../user_picture/userpic.png'></div>
+  <script>
+    const image = document.getElementById("image");
+    var crooper = new Cropper(image,{
+    aspectRatio:1/1,
+    viewMode:0
+})
+  </script>
 </body>
 <?php
     $verify = stripslashes(trim($_GET['verify'])); 
@@ -50,11 +59,11 @@ while ($row = $result->fetch_assoc()){
     } 
   }
   $s_ip = $realip;
-        $sql = mysqli_query($connection,"UPDATE `t_user` SET status='1',ip='$s_ip'  WHERE id=".$id);
-        $clean =mysqli_query($connection,"UPDATE `t_user` SET `token` = ''  WHERE `t_user`.`id` =" .$id);
+        //$sql = mysqli_query($connection,"UPDATE `t_user` SET status='1',ip='$s_ip'  WHERE id=".$id);
+        //$clean =mysqli_query($connection,"UPDATE `t_user` SET `token` = ''  WHERE `t_user`.`id` =" .$id);
         //创建一个结果集
         //$sql
-	if($sql){
+	if(1 == 1){
       echo "<div class='p1'>账户激活成功！接下来请完成您的账户初始操作</div>";
       echo "<button class='btn' onclick='picture()'>START</button>";
 	}else{
