@@ -50,11 +50,11 @@ while ($row = $result->fetch_assoc()){
     } 
   }
   $s_ip = $realip;
-        //$sql = mysqli_query($connection,"UPDATE `t_user` SET status='1',ip='$s_ip'  WHERE id=".$id);
-        //$clean =mysqli_query($connection,"UPDATE `t_user` SET `token` = ''  WHERE `t_user`.`id` =" .$id);
+        $sql = mysqli_query($connection,"UPDATE `t_user` SET status='1',ip='$s_ip'  WHERE id=".$id);
+        $clean =mysqli_query($connection,"UPDATE `t_user` SET `token` = ''  WHERE `t_user`.`id` =" .$id);
         //创建一个结果集
         //$sql
-	if(1 == 1){
+	if($sql){
       echo "<div class='p1'>账户激活成功！接下来请完成您的账户初始操作</div>";
       echo "<button class='btn' onclick='picture()'>START</button>";
 	}else{
