@@ -11,18 +11,9 @@
     <script src="../javascript/jquery-3.5.1.min.js"></script>
     <link rel="stylesheet" href="../crooper/cropper.min.css">
     <script src="../crooper/cropper.min.js"></script>
-    <script src="../javascript/cut.js"></script>
     <title>账户激活</title>
 </head>
 <body>
-<div class='box'><img id='image' width='400px' src='../user_picture/userpic.png'></div>
-  <script>
-    const image = document.getElementById("image");
-    var crooper = new Cropper(image,{
-    aspectRatio:1/1,
-    viewMode:0
-})
-  </script>
 </body>
 <?php
     $verify = stripslashes(trim($_GET['verify'])); 

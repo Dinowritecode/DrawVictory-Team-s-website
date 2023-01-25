@@ -22,7 +22,7 @@ function picture(){
             div3.style.backgroundColor="white"
             div3.style.zIndex="11"
             div3.style.borderRadius="8px"
-            div3.innerHTML="<p style='position:absolute;right:10px;top:-12px;height:0px;width:20px;font-size:40px;font-weight:500;color:rgba(0,0,0,0.3);cursor:pointer;' onclick='delete_p()'>×</p><div class='box'><img id='image' width='400px' src='../user_picture/userpic.png'></div>"
+            div3.innerHTML="<p style='position:absolute;right:10px;top:-12px;height:0px;width:20px;font-size:40px;font-weight:500;color:rgba(0,0,0,0.3);cursor:pointer;' onclick='delete_p()'>×</p><input type='file' > <div class='box'></div>"
             document.body.appendChild(div3)
 }
 function delete_p(){
