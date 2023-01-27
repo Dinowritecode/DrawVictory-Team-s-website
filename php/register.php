@@ -126,7 +126,7 @@ else if($userpass==$userpass2){
             margin: auto;
             left: 0;
             right: 0;
-            bottom: 150px;'>无法跳转？请复制以下链接进行激活<a href='https://localhost/web/php/active.php?verify=".$key."' target='_blank'>http://localhost/web/php/active.php?verify=".$key."</a></p>
+            bottom: 150px;'>无法跳转？请复制以下链接进行激活<a href='https://localhost/web/php/active.php?verify=".$key."' target='_blank' style='color:white;'>http://localhost/web/php/active.php?verify=".$key."</a></p>
             <p style='position: absolute;
             line-height: 0;
             color: white;
