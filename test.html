@@ -106,7 +106,9 @@
             type:'post',
             url:'php/face.php',
             dataType:'json',
-            data:'url=' + urlname,
+            data:{
+                url:urlname
+            },
             success:function(res){
                 console.log(res.result)
             }

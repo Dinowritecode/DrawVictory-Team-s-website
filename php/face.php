@@ -7,14 +7,14 @@ if($info[0] == 'data:image/png;base64'){
 }else{
     echo 'no';
 }
-function upa($str){
-    $pic = base64_decode($str);
-    if($pic === false) exit('失败');
-        $path = './'; //保存位置
-        $picname = '1.png';   //文件名及文件尾缀
-    if(file_put_contents($path.$picname,$pic)){
+function upa($str)
+{
+    $path = './'; //保存位置
+    $picname = '1.png';   //文件名及文件尾缀
+    $base64_image = str_replace(null, '', $str);
+    if (file_put_contents($path . $picname, base64_decode($base64_image))) {
         exit('success');
-    }else{
+    } else {
         exit('fail');
     }
 }
