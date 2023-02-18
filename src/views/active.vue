@@ -1,5 +1,5 @@
 <template>
-  <div class='p1' id='msg' @click="console.log('click')">{{ msg }}</div>
+  <div class='p1' id='msg'>{{ msg }}</div>
   <button class='btn' @click="starting=true" v-show="flag">START</button>
   <div id="back" v-show="starting"></div>
   <div id="setting" v-show="starting">

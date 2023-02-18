@@ -1,0 +1,203 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    background-color: rgb(17, 17, 17);
+    overflow: hidden;
+}
+
+.head > img {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    top: 25px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.head > h1 {
+    position: absolute;
+    font-size: 30px;
+    font-weight: 600;
+    color: white;
+    top: 130px;
+    width: 285px;
+    height: 60px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.head > p {
+    position: absolute;
+    color: rgb(173, 170, 170);
+    width: 385px;
+    height: 30px;
+    top: 175px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#login_frame {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 35px;
+    width: 270px;
+    height: 100px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+#login_frame > p {
+    color: #ff7675;
+    font-size: 26px;
+    position: absolute;
+    top: 32%;
+}
+
+#login_frame > a {
+    position: absolute;
+    color: #ff7675;
+    font-size: 13px;
+    cursor: pointer;
+    bottom: 25%;
+}
+
+#reg_frame {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 28px;
+    width: 270px;
+    height: 100px;
+    left: 0;
+    right: 0;
+    top: 30px;
+    margin: auto;
+}
+
+#reg_frame > p {
+    color: #ff7675;
+    font-size: 26px;
+    position: absolute;
+    top: 26%;
+}
+
+#reg_frame > a {
+    position: absolute;
+    color: #ff7675;
+    font-size: 13px;
+    cursor: pointer;
+    bottom: 20%;
+}
+
+.login {
+    position: absolute;
+    bottom: 31%;
+}
+
+.login:hover {
+    background-color: #ff7675;
+    color: #fff;
+    transition: 0.2s ease-in-out;
+}
+
+.reg {
+    position: absolute;
+    bottom: 25%;
+}
+
+.reg:hover {
+    background-color: #ff7675;
+    color: #fff;
+    transition: 0.2s ease-in-out;
+}
+
+#input_box {
+    position: relative;
+    width: 300px;
+}
+
+#input_box input {
+    width: 270px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgb(17, 17, 17);
+    border-radius: 5px;
+    outline: none;
+    color: #fff;
+    font-size: 1em;
+    transition: 0.5s ease-in-out;
+}
+
+#input_box span {
+    position: absolute;
+    left: 0;
+    padding: 10px;
+    pointer-events: none;
+    font-size: 1em;
+    color: rgba(255, 255, 255, 0.25);
+    text-transform: uppercase;
+    transition: 0.25s ease-in-out;
+}
+
+#input_box input:valid ~ span,
+#input_box input:focus ~ span {
+    color: #ff7675;
+    transform: translateX(10px) translateY(-7px);
+    font-size: 0.65em;
+    padding: 0;
+    background: rgb(17, 17, 17);
+    border-left: 1px solid #ff7675;
+    border-right: 1px solid #ff7675;
+    letter-spacing: 0.2em;
+    margin-left: 1px;
+}
+
+#input_box input:valid,
+#input_box input:focus {
+    border: 1px solid #ff7675;
+
+}
+
+.sign_button {
+    background-color: rgb(17, 17, 17, 1);
+    color: #ff7675;
+    border: 1px solid #ff7675;
+    padding: 6px 10px;
+    border-radius: 5px;
+    letter-spacing: 1px;
+    outline: none;
+    height: 35px;
+    width: 165px;
+    cursor: pointer;
+}
+
+.tip {
+    position: absolute;
+    margin-top: 1%;
+    left: 0;
+    font-size: 13px;
+    color: rgba(212, 6, 6, 0.795);
+}
+
+.help {
+    cursor: pointer;
+    position: absolute;
+}

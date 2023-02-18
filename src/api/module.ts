@@ -1,3 +1,13 @@
+export interface RegUser {
+    [index: string]: string;
+    /** 用户名 */
+    username: string,
+    /** 用户密码 */
+    password: string
+    /** 用户邮箱 */
+    email: string
+}
+
 export interface User {
     /** 用户id */
     id: number,
