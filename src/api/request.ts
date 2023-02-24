@@ -1,5 +1,5 @@
 import axios from "axios";
-import {Response} from "./module";
+import {Response} from "./model";
 
 const _axios = axios.create({});
 _axios.interceptors.response.use(
@@ -7,7 +7,7 @@ _axios.interceptors.response.use(
         return config
     },
     error => {
-        const response: Response<null> = {
+        const response: Response = {
             code: 9999,
             data: null,
             msg: '请重试'

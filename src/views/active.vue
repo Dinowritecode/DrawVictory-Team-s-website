@@ -1,81 +1,37 @@
 <template>
-  <div class='p1' id='msg'>{{ msg }}</div>
-  <button class='btn' @click="starting=true" v-show="flag">START</button>
-  <div id="back" v-show="starting"></div>
-  <div id="setting" v-show="starting">
-    <p @click="starting=false">×</p>
-    <el-upload
-        class="upload"
-        drag
-        action=""
-        :before-upload="beforeAvatarUpload"
-        :on-change="onChangeUpload"
-    >
-      <el-icon class="el-icon--upload">
-        <upload-filled/>
-      </el-icon>
-      <div class="el-upload__text">
-        将文件拖到此处，或<em>点击上传</em>
-      </div>
-      <template #tip>
-        <div class="el-upload__tip">
-          只能上传jpg/png文件，且不超过500kb
-        </div>
-      </template>
-    </el-upload>
-    <div class='box'></div>
-  </div>
+  <div class='msg'>{{ msg }}<br><span v-show="isSuccess">接下来可完成账户初始化操作</span></div>
+  <button class='btn' @click="starting=true" v-show="isSuccess">START</button>
+  <transition name="el-fade-in">
+    <div id="back" v-if="starting"></div>
+  </transition>
+  <transition name="el-fade-in">
+    <div id="setting" v-if="starting">
+      <p @click="starting=false">×</p>
+
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {ref} from 'vue';
 import axios from "../api/request";
-import {ElLoading, ElMessage} from "element-plus";
-import {useRequest} from 'vue-request'
-import {AxiosRespObject, Code, SpringObjectError, User} from "../api/module";
-// noinspection TypeScriptCheckImport
-import {UploadFilled} from '@element-plus/icons-vue'
+import {Code, SpringObject} from "../api/model";
 
-const msg = ref('');
-const flag = ref(false);//是否激活成功
+const msg = ref('激活中..');
+const isSuccess = ref(false);//是否激活成功
 const starting = ref(false)//是否打开starting界面
-
 const token: string = location.search.substring(1);
+
 if (token === '')
   msg.value = '请勿使用空激活码';
 else active();
 
-function active() {
-  const loading = ElLoading.service({//加载动画
-    lock: true,
-    text: '正在激活...',
-    spinner: 'el-icon-loading',
-    background: 'rgba(0, 0, 0, 0.3)'
-  });
-  const {data} = useRequest<AxiosRespObject<User>>(() => axios.get('/api/users/active/' + token))
-  const resp = computed(() => data.value?.data || SpringObjectError)
-  loading.close();
-  msg.value = resp.value.msg;
-  if (resp.value?.code === Code.ACTIVE_OK)
-    flag.value = true;
-}
-
-function onChangeUpload(file: File) {
-
-}
-
-function beforeAvatarUpload(file: File) {
-  const isJPG = file.type === 'image/jpeg';
-  const isPNG = file.type === 'image/png';
-  const isLt500K = file.size >> 30 < 500;
-
-  if (!isJPG && !isPNG) {
-    ElMessage.error('上传头像图片只能是 JPG/PNG 格式!');
+async function active() {
+  const {data: resp} = await axios.get<SpringObject<null>>('/api/users/active/' + token);
+  msg.value = resp.msg;
+  if (resp.code === Code.ACTIVE_OK) {
+    isSuccess.value = true;
   }
-  if (!isLt500K) {
-    ElMessage.error('上传头像图片大小不能超过 500KB!');
-  }
-  return (isJPG || isPNG) && isLt500K;
 }
 </script>
 
@@ -124,7 +80,7 @@ body {
   z-index: 10;
 }
 
-#msg {
+.msg {
   width: 260px;
   color: white;
   font-size: 20px;
@@ -162,14 +118,5 @@ body {
   color: rgba(0, 0, 0, 0.3);
   cursor: pointer;
   z-index: 2;
-}
-
-.upload {
-  margin: 3% auto auto;
-  width: 80%;
-}
-
-.el-upload__tip {
-  text-align: center;
 }
 </style>
