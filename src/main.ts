@@ -3,7 +3,7 @@ import ElementPlus from 'element-plus'
 // import VueCropper from 'vue-cropper';
 // import 'vue-cropper/dist/index.css'
 import 'element-plus/dist/index.css'
-import App from './views/active.vue'
+import App from './views/sign.vue'
 
 const app = createApp(App);
 app.use(ElementPlus);

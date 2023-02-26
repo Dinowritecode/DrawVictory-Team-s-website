@@ -1,4 +1,4 @@
-<template>
+<template class="dark">
   <div class="head">
     <img src="/logo.svg" width="90px" alt="logo">
     <h1>DrawVictory Team</h1>
@@ -38,11 +38,17 @@
     <div class="reg_frame frame" v-show="isReg">
       <p @click="cleanInfo">注册</p>
       <div class="input_box">
-        <input required v-model.trim="user.username" @blur="checkUsername()">
+        <input required autocomplete="off" v-model.trim="user.username" @blur="checkUsername()">
         <span>账户名称</span>
         <p class="tip" v-show="tips.username">用户名格式错误
-          <img class="help" src="/help.svg" alt="帮助"
-               @click="ElMessage('用户名只允许包含数字,大小写字母,下划线和连词线,且长度在4-16位之间')">
+          <el-tooltip
+              class="box-item"
+              effect="dark"
+              content="用户名只允许包含数字,大小写字母,下划线和连词线,且长度在4-16位之间"
+              placement="right"
+          >
+            <img class="help" src="/help.svg" alt="帮助">
+          </el-tooltip>
         </p>
       </div>
       <div class="input_box">
@@ -54,8 +60,14 @@
         <input type="password" required v-model.trim="user.password" @blur="checkPassword">
         <span>注册密码</span>
         <p class="tip" v-show="tips.password">密码格式错误
-          <img class="help" src="/help.svg" alt="帮助"
-               @click="ElMessage('密码需包含字母,符号或者数字中至少两项,且长度在6-16位之间')">
+          <el-tooltip
+              class="box-item"
+              effect="dark"
+              content="密码需包含字母,符号或者数字中至少两项,且长度在6-16位之间"
+              placement="right"
+          >
+            <img class="help" src="/help.svg" alt="帮助">
+          </el-tooltip>
         </p>
       </div>
       <div class="input_box">
@@ -74,10 +86,7 @@ import {reactive, ref} from 'vue';
 import {Code, RegUser, SpringObject} from '../api/model'
 import axios from "../api/request";
 import {ElLoading, ElMessage, ElNotification} from 'element-plus'
-import {useDark} from '@vueuse/core'
-import 'element-plus/theme-chalk/dark/css-vars.css'
 
-useDark();
 const isReg = ref(false);//注册界面or登录界面
 const user = reactive<RegUser>({username: "", password: "", email: ""});//提交的用户对象
 const password = ref('');//重复输入的密码
@@ -177,7 +186,7 @@ async function register() {
     verificationImg.value = '/api/users/verify?' + new Date().getMilliseconds();
     ElNotification({
       title: '注册失败 ' + (resp.code || 'NO STATUS CODE'),
-      message: resp.msg || '未知错误\n请稍后重试或尝试联系管理员',
+      message: resp.msg || '未知错误<br>请稍后重试或尝试联系管理员',
       type: 'error',
     });
   }
