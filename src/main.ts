@@ -7,4 +7,4 @@ import {createApp} from "vue";
 import Root from "./router/Root.vue";
 import router from "./router/router";
 
-createApp(Root).use(ElementPlus).use(router).mount('#app');//s
+createApp(Root).use(ElementPlus).use(router).mount('#app');
