@@ -1,5 +1,5 @@
 <template>
-    <div class="active">
+    <div class="activate">
         <div class='msg'>{{ msg }}<br><span v-show="isSuccess">接下来可完成账户初始化操作</span></div>
         <button v-show="isSuccess" class='btn' @click="starting=true">START</button>
         <transition name="el-fade-in">
@@ -29,9 +29,9 @@ if (token === '')
 else activate();
 
 async function activate() {
-    const {data: resp} = await axios.get<SpringObject<null>>('/api/users/active/' + token);
+    const {data: resp} = await axios.get<SpringObject<null>>('/api/users/activate/' + token);
     msg.value = resp.msg ?? '激活失败';
-    if (resp.code === Code.ACTIVE_OK) {
+    if (resp.code === Code.ACTIVATE_OK) {
         isSuccess.value = true;
     }
 }
@@ -44,7 +44,7 @@ async function activate() {
     border: 0;
 }
 
-.active {
+.activate {
     height: 100vh;
     background-color: #24292d;
 }

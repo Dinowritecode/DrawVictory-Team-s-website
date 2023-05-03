@@ -45,7 +45,7 @@
                     <p v-show="tips.username" class="tip">用户名格式错误
                         <el-tooltip
                                 class="box-item"
-                                content="用户名只允许包含数字,大小写字母,下划线和连词线,且长度在4-16位之间"
+                                content="用户名只允许包含数字，大小写字母，下划线和连词线，且长度在4-16位之间"
                                 effect="dark"
                                 placement="right"
                         >
@@ -66,7 +66,7 @@
                     <p v-show="tips.password" class="tip">密码格式错误
                         <el-tooltip
                                 class="box-item"
-                                content="密码需包含字母,符号或者数字中至少两项,且长度在6-16位之间"
+                                content="密码需包含字母，符号或者数字中至少两项，且长度在6-16位之间"
                                 effect="dark"
                                 placement="right"
                         >
@@ -144,7 +144,7 @@ function checkPwdIsSame(): boolean {
 
 function cleanInfo(): void {
     for (let key in tips) {
-        tips[key] = '';
+        tips[key] = false;
     }
     for (let key in user) {
         user[key] = '';
@@ -205,5 +205,5 @@ async function register() {
 </script>
 
 <style scoped>
-@import '../assets/styles';
+@import 'src/assets/styles/sign.css';
 </style>
