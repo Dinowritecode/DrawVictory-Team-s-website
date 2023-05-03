@@ -1,7 +1,7 @@
 <template class="dark">
     <div class="sign">
         <div class="head">
-            <img alt="logo" src="/logo.svg" width="90px">
+            <img alt="logo" src="/logo_dark.svg" width="90px">
             <h1>DrawVictory Team</h1>
             <p>加入官网，向我们反馈，参与到我们未来的活动中去。</p>
         </div>
@@ -205,5 +205,5 @@ async function register() {
 </script>
 
 <style scoped>
-@import '../assets/css/sign.css';
+@import '../assets/styles';
 </style>

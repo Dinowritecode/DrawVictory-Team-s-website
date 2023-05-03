@@ -1,5 +1,5 @@
 // import VueCropper from 'vue-cropper';
-// import 'vue-cropper/dist/index.css'
+// import 'vue-cropper/dist/index.styles'
 
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';

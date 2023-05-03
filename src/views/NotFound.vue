@@ -3,8 +3,8 @@
 </script>
 
 <template>
-    <h1>404</h1>
-    <p>暂未制作</p>
+    <h1>404 Not Found</h1>
+    <p>404页面暂未制作</p>
 </template>
 
 <style scoped>

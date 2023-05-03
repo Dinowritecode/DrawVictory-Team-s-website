@@ -19,10 +19,10 @@ const routes = [
         component: () => import('../views/Sign.vue')
     },
     {
-        path: '/active',
-        name: 'active',
+        path: '/activate',
+        name: 'activate',
         meta: {title: '激活'},
-        component: () => import('../views/Active.vue')
+        component: () => import('../views/Activate.vue')
     },
     {
         path: '/:pathMatcher(.*)*',

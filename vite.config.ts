@@ -12,7 +12,7 @@ export default defineConfig({
         Components({resolvers: [ElementPlusResolver()],}),
     ],
     server: {
-        port: 82,
+        port: 80,
         host: '0.0.0.0',
         proxy: {
             '/api': {

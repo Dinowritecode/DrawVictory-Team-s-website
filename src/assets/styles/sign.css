@@ -146,7 +146,7 @@
     left: 0;
     padding: 10px;
     pointer-events: none;
-    font-size: 1em;
+    font-size: 14px;
     color: rgba(255, 255, 255, 0.25);
     text-transform: uppercase;
     transition: 0.25s ease-in-out;

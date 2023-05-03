@@ -26,9 +26,9 @@ const token: string = location.search.substring(1);
 
 if (token === '')
     msg.value = '请勿使用空激活码';
-else active();
+else activate();
 
-async function active() {
+async function activate() {
     const {data: resp} = await axios.get<SpringObject<null>>('/api/users/active/' + token);
     msg.value = resp.msg ?? '激活失败';
     if (resp.code === Code.ACTIVE_OK) {
