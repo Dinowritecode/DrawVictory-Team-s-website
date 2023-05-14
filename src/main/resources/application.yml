@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 29dabeb55351c78b
+    url: jdbc:mysql:///dvt?useSSL=false&useServerPrepStmts=true&useUnicode=true&characterEncoding=UTF-8
+    type: com.alibaba.druid.pool.DruidDataSource
+  mail:
+    host: smtp.qq.com
+    username: cmjdcyf@qq.com
+    password: fdcopdqnktnbjeae #smtp授权码
+    default-encoding: UTF-8
+    protocol: smtp
+    properties:
+      debug: true
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,${config.static}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+      enabled: true
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+server:
+  port: 8080
+  domain: evencyan.eu.org
+config:
+  static: file:./static/
+  mail:
+    devAcc: cmjdcyf@qq.com #开发人员
+    opsAcc: cmjdcyf@qq.com #运维人员
+logging:
+  level:
+    root: info
+    sql: info
+    web: info
