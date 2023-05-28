@@ -24,13 +24,14 @@ create table if not exists s_user
 (
     `uid`           int auto_increment comment 'id',
     `username`      varchar(20)  not null unique comment '用户名',
-    `password`      varchar(20)  not null comment '密码(SHA-256)',
-    `email`         varchar(100) not null comment '邮箱',
+    `password`      char(64)  not null comment '密码(SHA-256)',
+    `email`         varchar(100) not null unique comment '邮箱',
     `register_time` int          null     default null comment '注册时间戳',
-    `avatar`        varchar(100)          default null comment '头像url',
-    `status`        char(1)      not null default '1' comment '状态(0停用 1正常)',
+    `avatar`        blob                  default null comment '头像',
     `role`          int          not null default 100 comment '角色',
-    `is_delete`     char(1)      not null default '0' comment '是否删除(0正常 1删除)',
+    `status`        tinyint(1)   not null default 1 comment '状态(0停用 1正常)',
+    `is_deleted`    tinyint(1)   not null default 0 comment '是否删除(0正常 1删除)',
+    `version`       int(11)      not null default 1 comment '乐观锁',
     primary key (`uid`),
     foreign key (`role`) references s_role (`rid`)
 ) engine = InnoDB
@@ -43,6 +44,6 @@ create trigger s_user_register_time
 begin
     set new.register_time = unix_timestamp();
 end;
--- 添加默认超级管理员账户
+-- 添加默认超级管理员账户(密码为qo3G89jI5Bqi3W)
 insert into s_user (username, password, email, role)
-values ('super_admin', 'qo3G89jI5Bqi3W', 'example@example.com', 102);
+values ('super_admin', 'b4422bb1006d65e62ab83f7b401c9aeec3a35a4002c66a7213b912bc9df09079', 'example@example.com', 102);

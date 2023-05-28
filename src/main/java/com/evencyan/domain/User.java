@@ -1,5 +1,6 @@
 package com.evencyan.domain;
 
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,23 +8,27 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@TableName("s_user")
 public class User {
-    int id, regTime,status;
-    String username, password, email, token;
-    String avatar;
+    @TableId(type = IdType.AUTO)
+    private Integer uid;
+    @TableField("register_time")
+    private Integer registerTime;
+    private Boolean status;
+    @TableField(value = "is_deleted")
+    private Boolean isDeleted;
+    @TableField(select = false)
+    private String password;
+    private String username, email, role;
+
+    private Byte[] avatar;
+    @Version
+    @TableField(select = false)
+    private Integer version;
 
     public User(String username, String password, String email) {
         this.username = username;
         this.password = password;
         this.email = email;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-               "username='" + username + '\'' +
-               ", password='" + password + '\'' +
-               ", email='" + email + '\'' +
-               '}';
     }
 }

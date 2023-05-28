@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 29dabeb55351c78b
-    url: jdbc:mysql:///dvt?useSSL=false&useServerPrepStmts=true&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql:///dvt?useSSL=false&useServerPrepStmts=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     type: com.alibaba.druid.pool.DruidDataSource
   mail:
     host: smtp.qq.com
@@ -37,3 +37,11 @@ logging:
     root: info
     sql: info
     web: info
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: is_deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0

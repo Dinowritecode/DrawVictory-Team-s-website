@@ -1,17 +1,21 @@
 package com.evencyan.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.evencyan.controller.Code;
 import com.evencyan.controller.Result;
 import com.evencyan.dao.UserDao;
 import com.evencyan.domain.User;
 import com.evencyan.exception.BusinessException;
+import com.evencyan.exception.SystemException;
 import com.evencyan.service.UserService;
 import com.evencyan.thread.ActivationMailThread;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -27,32 +31,13 @@ public class UserServiceImpl implements UserService {
     private String location;
 
     @Override
-    public Result getResultById(int id) {
-        User user = userDao.getById(id);
-        if (user == null) return new Result(Code.GET_ID_NOT_EXIST_ERR, null, "用户不存在");
-        return new Result(Code.GET_OK, user);
-    }
-
-    @Override
-    public User getUserById(int id) {
-        User user = userDao.getById(id);
-        if (user == null) throw new BusinessException(Code.GET_ID_NOT_EXIST_ERR, null, "用户不存在");
-        return user;
-    }
-
-    @Override
-    public Result getResultByUsername(String username) {
-        User user = userDao.getByUsername(username);
-        if (user == null) throw new BusinessException(Code.GET_USERNAME_NOT_EXIST_ERR, null, "用户不存在");
-        return new Result(Code.GET_OK, user);
-    }
-
-    @Override
-    public Result activateUser(String token) {
+    public Result activate(String token) {
+        //TODO 使用redis重构激活逻辑
+/*
         User user = userDao.getByToken(token);
         if (user == null)
             throw new BusinessException(Code.ACTIVATE_ERR, null, "抱歉，您的激活链接无效");
-        if (user.getRegTime() / 1000 + 3600 > System.currentTimeMillis()) {
+        if (user.getRegisterTime() / 1000 + 3600 > System.currentTimeMillis()) {//激活链接有效期为1小时
             userDao.delete(user);
             throw new BusinessException(Code.ACTIVATE_ERR, user, "您的激活有效期已过");
         }
@@ -61,19 +46,19 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new BusinessException(Code.ACTIVATE_ERR, user, "激活失败，未知原因");
         }
-        return new Result(Code.ACTIVATE_OK, user, "账户激活成功！");
+*/
+        return new Result(Code.ACTIVATE_OK, null, "账户激活成功！");
     }
 
     @Override
     public Result register(User user) {
-        userDao.deleteInvalid();
         if (StringUtils.isEmpty(user.getUsername()) ||
                 StringUtils.isEmpty(user.getPassword()) ||
                 StringUtils.isEmpty(user.getEmail())
         ) throw new BusinessException(Code.REGISTER_EMPTY_DATA_ERR, user, "请正确填写信息");
         user.setUsername(user.getUsername().trim());
         user.setPassword(user.getPassword().trim());
-        user.setEmail(user.getEmail().trim());
+        user.setEmail(user.getEmail().trim().toLowerCase());
         //->用户名只允许包含数字,大小写字母,下划线和连词线,且长度在4-16位之间
         if (!user.getUsername().matches("[\\w-]{4,16}"))
             throw new BusinessException(Code.REGISTER_USERNAME_FORMAT_ERR, user, "用户名格式有误");
@@ -82,21 +67,21 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(Code.REGISTER_PASSWORD_FORMAT_ERR, user, "密码格式有误");
         if (!user.getEmail().matches("[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z0-9]{2,6}"))
             throw new BusinessException(Code.REGISTER_EMAIL_FORMAT_ERR, user, "邮箱格式有误");
-        if (userDao.getByUsername(user.getUsername()) != null)
+        if (userDao.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername())) != null)
             throw new BusinessException(Code.REGISTER_EXIST_USERNAME_ERR, user, "用户名已存在");
-        if (userDao.getByEmail(user.getEmail()) != null)
+        if (userDao.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, user.getEmail())) != null)
             throw new BusinessException(Code.REGISTER_EXIST_EMAIL_ERR, user, "您的邮箱已注册过");
-        String token = DigestUtils.md5Hex(user.getUsername() + random.nextInt(100000));
-        user.setToken(token);
+        String token = RandomStringUtils.randomAlphabetic(10);
+        user.setPassword(DigestUtils.sha256Hex(user.getPassword()));
         try {
-            userDao.register(user);
+            userDao.insert(user);
         } catch (Exception e) {
-            throw new BusinessException(Code.REGISTER_UNKNOWN_ERR, null, "服务器繁忙,请稍后重试或尝试联系管理员");
+            throw new SystemException(Code.REGISTER_UNKNOWN_ERR, null, "服务器繁忙,请稍后重试或尝试联系管理员");
         }
         ActivationMailThread mailSendThread = new ActivationMailThread(user.getUsername(), user.getEmail(),
-                location + "/active.html?" + token);
+                location + "/activate.html?" + token);
         mailSendThread.start();//邮件发送线程
-        log.info("注册成功 uid:" + user.getId());
+        log.info("注册成功 uid:" + user.getUid());
         return new Result(Code.REGISTER_OK, null, "请查收邮箱并在一小时内完成激活");
     }
 
@@ -117,4 +102,16 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(Code.LOGIN_NOT_ACTIVATE_ERR, user, "账户未激活");
         return new Result(Code.LOGIN_OK, user1, "登录成功");
     }*/
+
+    @Override
+    public Result setAvatar(User user) {
+        try {
+            User updateUser = userDao.selectById(user.getUid());
+            updateUser.setAvatar(user.getAvatar());
+            userDao.updateById(updateUser);
+        } catch (Exception e) {
+            throw new SystemException(Code.UPDATE_ERR, user, "头像修改失败");
+        }
+        return new Result(Code.UPDATE_OK, null, "头像修改成功");
+    }
 }
