@@ -1,15 +1,20 @@
 package com.evencyan;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.evencyan.dao.UserDao;
+import com.evencyan.dao.PendingUserDao;
 import com.evencyan.domain.User;
+import com.evencyan.domain.PendingUser;
+import com.evencyan.service.impl.UserServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Random;
 
@@ -18,6 +23,12 @@ import java.util.Random;
 class WebsiteApplicationTests {
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private UserServiceImpl userService;
+    @Autowired
+    private PendingUserDao pendingUserDao;
 
     @Test
     void contextLoads() {
@@ -26,6 +37,7 @@ class WebsiteApplicationTests {
 
     @Autowired
     private Random random;
+
     //随机加盐方法
     String addRandomSalt() {
         //生成随机盐
@@ -38,15 +50,55 @@ class WebsiteApplicationTests {
     }
 
     @Test
-    void userDaoTest(){
-//        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
-//        lqw.eq(User::getEmail,"example@example.com");
-//        User user = userDao.selectOne(lqw);
-//        System.out.println(user);
+    void userDaoTest() throws Exception {
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(User::getEmail, "example@example.com");
+//        lqw.select(User::getUid,User::getEmail,User::getUsername);
+        User user = userDao.selectOne(lqw);
+        System.out.println(toJson(user));
 //        System.out.println(userDao.selectById(1));
 //        User user = new User("abcde","123","tesaat@abc.com");
 //        user.setStatus(false);
 //        userDao.insert(user);
     }
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static String toJson(Object object) throws Exception {
+        return objectMapper.writeValueAsString(object);
+    }
+
+    @Test
+    void redisTest() {
+//        System.out.println(pendingUserDao.findByUid(-295861076));
+        System.out.println(pendingUserDao.findById("-295861076"));
+    }
+
+    @Test
+    void redisTest2() {
+        User user = new User("abc", "123", "test@test.com");
+        PendingUser uo = user.toPendingUser();
+        System.out.println(user);
+        pendingUserDao.save(uo);
+        System.out.println(uo.getUid());
+        User user2 = new User("abc", "123", "test@test.com");
+        PendingUser uo2 = user2.toPendingUser();
+        uo2.setUsername("def");
+        uo2.setEmail("456");
+        pendingUserDao.save(uo2);
+        System.out.println(uo2.getUid());
+//        redisTemplate.opsForValue().set("active:123",user);
+//        User user1 = (User) redisTemplate.opsForValue().get("active:123");
+//        System.out.println(user1);
+    }
+
+    @Test
+    void redisFindTest() {
+        System.out.println(pendingUserDao.findOneByUsername("abc"));
+    }
+
+    @Test
+    void jsonTest() {
+        User user = new User("abc", "123", "test@test.com");
+    }
 }

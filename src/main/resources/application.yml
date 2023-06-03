@@ -23,7 +23,19 @@ spring:
       enabled: true
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      password: aw90ab9nzbl
+      jedis:
+        pool:
+          enabled: true
+          max-active: 8
+          max-wait: 1ms
+          max-idle: 8
+          min-idle: 0
 server:
   port: 8080
   domain: evencyan.eu.org

@@ -3,22 +3,29 @@ package com.evencyan.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.evencyan.controller.Code;
 import com.evencyan.controller.Result;
+import com.evencyan.dao.PendingUserDao;
 import com.evencyan.dao.UserDao;
+import com.evencyan.domain.PendingUser;
 import com.evencyan.domain.User;
 import com.evencyan.exception.BusinessException;
 import com.evencyan.exception.SystemException;
 import com.evencyan.service.UserService;
 import com.evencyan.thread.ActivationMailThread;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -27,26 +34,23 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
     @Autowired
     private Random random;
+    @Autowired
+    private PendingUserDao pendingUserDao;
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
     @Value("${server.domain}")
     private String location;
 
     @Override
     public Result activate(String token) {
-        //TODO 使用redis重构激活逻辑
-/*
-        User user = userDao.getByToken(token);
-        if (user == null)
-            throw new BusinessException(Code.ACTIVATE_ERR, null, "抱歉，您的激活链接无效");
-        if (user.getRegisterTime() / 1000 + 3600 > System.currentTimeMillis()) {//激活链接有效期为1小时
-            userDao.delete(user);
-            throw new BusinessException(Code.ACTIVATE_ERR, user, "您的激活有效期已过");
-        }
+        Optional<PendingUser> optionalUser = pendingUserDao.findById(token);
+        if (!optionalUser.isPresent())
+            throw new BusinessException(Code.ACTIVATE_ERR, null, "抱歉，您的激活链接无效或激活有效期已过");
         try {
-            userDao.activate(user);
+            userDao.insert(optionalUser.get().toUser());
         } catch (Exception e) {
-            throw new BusinessException(Code.ACTIVATE_ERR, user, "激活失败，未知原因");
+            throw new BusinessException(Code.ACTIVATE_ERR, null, "激活失败，未知原因");
         }
-*/
         return new Result(Code.ACTIVATE_OK, null, "账户激活成功！");
     }
 
@@ -67,21 +71,23 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(Code.REGISTER_PASSWORD_FORMAT_ERR, user, "密码格式有误");
         if (!user.getEmail().matches("[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z0-9]{2,6}"))
             throw new BusinessException(Code.REGISTER_EMAIL_FORMAT_ERR, user, "邮箱格式有误");
+        if (pendingUserDao.findOneByUsername(user.getUsername()) != null ||
+                pendingUserDao.findOneByEmail(user.getEmail()) != null)
+            throw new BusinessException(Code.REGISTER_PENDING_ACTIVATION_ERR, user, "您的邮箱或用户名已注册过，请前往邮箱激活或一小时后重试注册");
         if (userDao.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername())) != null)
             throw new BusinessException(Code.REGISTER_EXIST_USERNAME_ERR, user, "用户名已存在");
         if (userDao.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, user.getEmail())) != null)
             throw new BusinessException(Code.REGISTER_EXIST_EMAIL_ERR, user, "您的邮箱已注册过");
-        String token = RandomStringUtils.randomAlphabetic(10);
         user.setPassword(DigestUtils.sha256Hex(user.getPassword()));
         try {
-            userDao.insert(user);
+            PendingUser pendingUser = user.toPendingUser();
+            pendingUserDao.save(pendingUser);
+            new ActivationMailThread(user.getUsername(), user.getEmail(),
+                    location + "/activate.html?" + pendingUser.getUid()).start();
+            log.info("注册成功 pendingUid:" + pendingUser.getUid());
         } catch (Exception e) {
             throw new SystemException(Code.REGISTER_UNKNOWN_ERR, null, "服务器繁忙,请稍后重试或尝试联系管理员");
         }
-        ActivationMailThread mailSendThread = new ActivationMailThread(user.getUsername(), user.getEmail(),
-                location + "/activate.html?" + token);
-        mailSendThread.start();//邮件发送线程
-        log.info("注册成功 uid:" + user.getUid());
         return new Result(Code.REGISTER_OK, null, "请查收邮箱并在一小时内完成激活");
     }
 

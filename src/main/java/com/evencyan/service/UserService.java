@@ -11,7 +11,7 @@ public interface UserService {
     /**
      * 根据激活码激活用户
      *
-     * @param token 激活码
+     * @param pendingUid 激活码(待激活用户id)
      */
     Result activate(String token);
 

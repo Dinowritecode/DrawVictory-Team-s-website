@@ -18,6 +18,7 @@ public class Code {
     public static final int REGISTER_EMPTY_DATA_ERR = 1107;//空数据(信息未填写完全)
     public static final int REGISTER_VERIFICATION_CODE_ERR = 1108;//验证码错误
     public static final int REGISTER_VERIFY_WITHOUT_PRE_REQUEST_ERR = 1109;//未预先请求验证码直接发送注册请求(同一验证码多次请求或技术手段直接请求)
+    public static final int REGISTER_PENDING_ACTIVATION_ERR = 1110;//待激活
     public static final int REGISTER_UNKNOWN_ERR = 1199;//未知错误
 
     public static final int UPDATE_ERR = 2101;
