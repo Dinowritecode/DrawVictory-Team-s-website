@@ -4,14 +4,17 @@ import com.evencyan.domain.User;
 import com.evencyan.exception.BusinessException;
 import com.evencyan.service.UserService;
 import com.evencyan.util.CheckCodeUtil;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/users")
@@ -20,33 +23,33 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
-    @PostMapping("/register/{verificationCode}")
-    public Result register(@RequestBody User user, @PathVariable String verificationCode, HttpSession session) {
-        if (StringUtils.isEmpty(verificationCode))
-            throw new BusinessException(Code.REGISTER_EMPTY_DATA_ERR, user, "请输入验证码");
-        if (session.getAttribute("verificationCode") == null)
-            throw new BusinessException(Code.REGISTER_VERIFY_WITHOUT_PRE_REQUEST_ERR, user, "无预请求的验证");
-        if (!verificationCode.equalsIgnoreCase(session.getAttribute("verificationCode").toString()))
+    @PostMapping("/register")//用户注册
+    public Result register(@RequestBody User user, @RequestParam("verificationCode") String verificationCode,
+                           @RequestParam("verificationId") String verificationId) {
+        if (StringUtils.isEmpty(verificationCode) || StringUtils.isEmpty(verificationId))//验证码或验证id为空
+            throw new BusinessException(Code.REGISTER_EMPTY_DATA_ERR, user, "请求参数不齐全");
+        String verificationCodeInRedis = redisTemplate.opsForValue().getAndDelete("verId:" + verificationId);//获取并销毁验证码
+        if (StringUtils.isEmpty(verificationCodeInRedis))//验证码是否为空
+            throw new BusinessException(Code.REGISTER_VERIFICATION_CODE_EXPIRED_ERR, user, "您的验证码已过期，请重试");
+        if (!verificationCode.equalsIgnoreCase(verificationCodeInRedis))
             throw new BusinessException(Code.REGISTER_VERIFICATION_CODE_ERR, user, "验证码错误");
-        session.setAttribute("verificationCode", null);//验证码销毁
         return userService.register(user);
     }
 
     @GetMapping("/activate/{token}")
     public Result activate(@PathVariable String token) {
-        return userService.activate(token);
+        return userService.activate(token.trim());
     }
 
-//    @GetMapping("/{id}")
-//    public Result getUser(@PathVariable int id) {
-//        return new Result(Code.GET_OK, userService.getUserById(id));
-//    }
-
     @GetMapping("/verify")
-    public void verify(HttpSession session, HttpServletResponse response) throws IOException {
+    public void verify(HttpServletResponse response) throws IOException {
+        String verificationId = RandomStringUtils.randomAlphanumeric(10);//生成随机验证id
+        response.setHeader("Verification-Id",verificationId);
         String verificationCode = CheckCodeUtil.outputVerifyImage(100, 50, response.getOutputStream(), 4);
-        session.setAttribute("verificationCode", verificationCode);
+        redisTemplate.opsForValue().set("verId:" + verificationId, verificationCode, 5, TimeUnit.MINUTES);
         log.info("verification code: " + verificationCode);
     }
 
@@ -57,7 +60,6 @@ public class UserController {
 
     @RequestMapping("/test")
     public Result test() {
-        log.error("log error");
         return new Result(1, null, "abc");
     }
 }

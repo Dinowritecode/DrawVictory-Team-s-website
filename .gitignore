@@ -33,6 +33,5 @@ build/
 .vscode/
 
 ### other ###
-/.element-ui-packages/
 /.mvn/
 /logs/

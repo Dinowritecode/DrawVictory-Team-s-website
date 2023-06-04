@@ -8,8 +8,8 @@ public class ActivationMailThread extends Thread {
 
 
     public ActivationMailThread(String username, String receiveMailAccount, String link) {
-        super.setPriority(Thread.MIN_PRIORITY);
         super.setName("MailSender-" + username);
+        this.setPriority(Thread.MIN_PRIORITY);
         this.username = username;
         this.receiveMailAccount = receiveMailAccount;
         this.activationLink = link;

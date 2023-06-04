@@ -17,6 +17,7 @@ public class User {
     private Integer uid;
     @TableField("register_time")
     private Integer registerTime;
+    @JsonIgnore
     private Boolean status;
     @TableField(value = "is_deleted", select = false)
     @TableLogic
@@ -37,6 +38,6 @@ public class User {
     }
 
     public PendingUser toPendingUser() {
-        return new PendingUser(this.uid, this.username, this.email, this.password);
+        return new PendingUser(this);
     }
 }

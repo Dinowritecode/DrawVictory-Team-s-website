@@ -71,7 +71,9 @@ class WebsiteApplicationTests {
     @Test
     void redisTest() {
 //        System.out.println(pendingUserDao.findByUid(-295861076));
-        System.out.println(pendingUserDao.findById("-295861076"));
+//        System.out.println(pendingUserDao.findById("-295861076"));
+//        pendingUserDao.findAll().forEach(System.out::println);
+//        redisTemplate.expire("pending:1925406907",20,java.util.concurrent.TimeUnit.SECONDS);
     }
 
     @Test
@@ -79,22 +81,13 @@ class WebsiteApplicationTests {
         User user = new User("abc", "123", "test@test.com");
         PendingUser uo = user.toPendingUser();
         System.out.println(user);
-        pendingUserDao.save(uo);
+        uo = pendingUserDao.save(uo);
         System.out.println(uo.getUid());
-        User user2 = new User("abc", "123", "test@test.com");
-        PendingUser uo2 = user2.toPendingUser();
-        uo2.setUsername("def");
-        uo2.setEmail("456");
-        pendingUserDao.save(uo2);
-        System.out.println(uo2.getUid());
-//        redisTemplate.opsForValue().set("active:123",user);
-//        User user1 = (User) redisTemplate.opsForValue().get("active:123");
-//        System.out.println(user1);
     }
 
     @Test
     void redisFindTest() {
-        System.out.println(pendingUserDao.findOneByUsername("abc"));
+        System.out.println(pendingUserDao.findById("164866111"));
     }
 
     @Test
