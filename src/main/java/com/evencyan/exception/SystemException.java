@@ -1,8 +1,10 @@
 package com.evencyan.exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class SystemException extends RuntimeException {
 
     private int code;

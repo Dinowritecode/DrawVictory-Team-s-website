@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("s_user")
+@TableName("sys_user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
     @TableId(type = IdType.AUTO)
@@ -25,7 +25,9 @@ public class User {
     private Boolean isDeleted;
     @TableField(select = false)
     private String password;
-    private String username, email, role;
+    private String username, email;
+    @TableField("role_id")
+    private Integer roleId;
     private Byte[] avatar;
     @Version
     @TableField(select = false)

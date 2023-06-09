@@ -38,7 +38,7 @@ spring:
           min-idle: 0
 server:
   port: 8080
-  domain: evencyan.eu.org
+  domain: test.com
 config:
   static: file:./static/
   pending-user-expire: 3600 #注册用户过期时间(毫秒),若修改请一同修改PendingUser实体类中的expire字段

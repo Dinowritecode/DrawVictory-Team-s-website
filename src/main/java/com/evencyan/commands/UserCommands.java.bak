@@ -1,0 +1,59 @@
+package com.evencyan.commands;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.evencyan.dao.RoleDao;
+import com.evencyan.dao.UserDao;
+import com.evencyan.domain.Role;
+import com.evencyan.domain.User;
+import com.evencyan.service.UserService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.shell.standard.ShellCommandGroup;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
+
+@ShellComponent
+@ShellCommandGroup("User Commands")
+public class UserCommands {
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private RoleDao roleDao;
+
+    @ShellMethod(value = "Add a user.", key = "user add")
+    public String add(
+            @ShellOption(value = {"--username"}, help = "用户名") String username,
+            @ShellOption(value = {"--password"}, help = "密码") String password,
+            @ShellOption(value = {"--email"}, help = "邮箱") String email,
+            @ShellOption(value = {"--role"}, help = "角色", defaultValue = "user") String role
+    ) {
+        if (StringUtils.isBlank(username)
+                || StringUtils.isBlank(password)
+                || StringUtils.isBlank(email)
+                || StringUtils.isBlank(role))
+            System.out.println(AnsiOutput.toString(AnsiColor.RED, "Error: Invalid input"));
+        User user = new User(username, password, email);
+        LambdaQueryWrapper<Role> lqw = new LambdaQueryWrapper<>();
+        lqw.select(Role::getRid).eq(Role::getName,role);
+//        user.setRole(roleDao.selectOne(lqw).getRid());
+//        user.setRole(role);
+        return "a";
+    }
+
+    @ShellMethod(value = "Delete a user.", key = "user delete")
+    public String delete(
+            @ShellOption(value = {""}, help = "用户名") String username,
+            @ShellOption(value = {""}, help = "邮箱") String email,
+            @ShellOption(value = {""}, help = "密码") String password
+    ) {
+        System.out.println(username);
+        System.out.println(email);
+        System.out.println(password);
+        return "a";
+    }
+}

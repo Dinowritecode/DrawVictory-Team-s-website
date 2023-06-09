@@ -9,18 +9,21 @@ import com.evencyan.domain.PendingUser;
 import com.evencyan.domain.User;
 import com.evencyan.exception.BusinessException;
 import com.evencyan.exception.SystemException;
+import com.evencyan.service.MailService;
 import com.evencyan.service.UserService;
-import com.evencyan.thread.ActivationMailThread;
-import com.evencyan.thread.PendingIndexDeleteThread;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +40,11 @@ public class UserServiceImpl implements UserService {
     private String location;
     @Value("${config.pending-user-expire}")
     private int pendingUserExpire;// 秒
+    @Autowired
+    @Qualifier("genericTaskScheduler")
+    private ThreadPoolTaskScheduler scheduler;
+    @Autowired
+    private MailService mailService;
 
     @Override
     public Result activate(String token) {
@@ -49,15 +57,15 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(Code.ACTIVATE_ERR, null, "激活失败，未知原因");
         }
         pendingUserDao.deleteById(token);
-        log.info("激活成功 username:"+ optionalUser.get().getUsername());
+        log.info("激活成功 username:" + optionalUser.get().getUsername());
         return new Result(Code.ACTIVATE_OK, null, "账户激活成功！");
     }
 
     @Override
     public Result register(User user) {
-        if (StringUtils.isEmpty(user.getUsername()) ||
-                StringUtils.isEmpty(user.getPassword()) ||
-                StringUtils.isEmpty(user.getEmail())
+        if (StringUtils.isBlank(user.getUsername()) ||
+                StringUtils.isBlank(user.getPassword()) ||
+                StringUtils.isBlank(user.getEmail())
         ) throw new BusinessException(Code.REGISTER_EMPTY_DATA_ERR, user, "请正确填写信息");
         user.setUsername(user.getUsername().trim());
         user.setPassword(user.getPassword().trim());
@@ -78,20 +86,21 @@ public class UserServiceImpl implements UserService {
         if (userDao.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, user.getEmail())) != null)
             throw new BusinessException(Code.REGISTER_EXIST_EMAIL_ERR, user, "您的邮箱已注册过");
         user.setPassword(DigestUtils.sha256Hex(user.getPassword()));
-        try {
-            PendingUser pendingUser = user.toPendingUser();
-            pendingUser = pendingUserDao.save(pendingUser);
-            //删除过期的pendingUser的索引
-            redisTemplate.expire("pending:username:" + pendingUser.getUsername(), pendingUserExpire, TimeUnit.SECONDS);
-            redisTemplate.expire("pending:email:" + pendingUser.getEmail(), pendingUserExpire, TimeUnit.SECONDS);
-            redisTemplate.expire("pending:%s:idx".formatted(pendingUser.getUid()), pendingUserExpire, TimeUnit.SECONDS);
-            new PendingIndexDeleteThread(pendingUser.getUid(), pendingUserExpire, redisTemplate).start();//1小时后删除残留索引
-            new ActivationMailThread(user.getUsername(), user.getEmail(),
-                    location + "/activate.html?" + pendingUser.getUid()).start();//发生激活邮件
-            log.info("注册成功 pendingUid:" + pendingUser.getUid());
-        } catch (Exception e) {
-            throw new SystemException(Code.REGISTER_UNKNOWN_ERR, null, "服务器繁忙,请稍后重试或尝试联系管理员");
-        }
+
+        PendingUser pendingUser = user.toPendingUser();
+        pendingUser = pendingUserDao.save(pendingUser);
+        Integer pendingUserUid = pendingUser.getUid();
+        //删除过期的pendingUser的索引
+        redisTemplate.expire("pending:username:" + pendingUser.getUsername(), pendingUserExpire, TimeUnit.SECONDS);
+        redisTemplate.expire("pending:email:" + pendingUser.getEmail(), pendingUserExpire, TimeUnit.SECONDS);
+        redisTemplate.expire("pending:%s:idx".formatted(pendingUserUid), pendingUserExpire, TimeUnit.SECONDS);
+        scheduler.schedule(() -> redisTemplate.opsForSet().remove("pending", pendingUserUid),
+                Instant.now().plus(Duration.ofSeconds(pendingUserExpire)));//一小时后删除残余索引
+        mailService.sendActivationMail("账号激活", pendingUser.getEmail(), pendingUser.getUsername(),
+                location + "/activate.html?" + pendingUser.getUid());//发送激活邮件
+        log.info("注册成功 pendingUid:" + pendingUserUid);
+
+
         return new Result(Code.REGISTER_OK, null, "请查收邮箱并在一小时内完成激活");
     }
 

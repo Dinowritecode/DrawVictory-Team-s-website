@@ -35,3 +35,4 @@ build/
 ### other ###
 /.mvn/
 /logs/
+*.log

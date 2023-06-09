@@ -6,14 +6,15 @@ import com.evencyan.dao.UserDao;
 import com.evencyan.dao.PendingUserDao;
 import com.evencyan.domain.User;
 import com.evencyan.domain.PendingUser;
+import com.evencyan.service.impl.MailServiceImpl;
 import com.evencyan.service.impl.UserServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Random;
@@ -32,23 +33,11 @@ class WebsiteApplicationTests {
 
     @Test
     void contextLoads() {
-        System.out.println(DigestUtils.sha256Hex("qo3G89jI5Bqi3W"));
+        userDao.insert(new User("testuser", DigestUtils.sha256Hex("114514"),"email"));
     }
 
     @Autowired
     private Random random;
-
-    //随机加盐方法
-    String addRandomSalt() {
-        //生成随机盐
-
-        String salt = "";
-        for (int i = 0; i < 6; i++) {
-            salt += (char) (random.nextInt(26) + 97);
-        }
-        return salt;
-    }
-
     @Test
     void userDaoTest() throws Exception {
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
@@ -64,7 +53,7 @@ class WebsiteApplicationTests {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static String toJson(Object object) throws Exception {
+    public static String toJson(Object object) throws JsonProcessingException {
         return objectMapper.writeValueAsString(object);
     }
 
@@ -93,5 +82,14 @@ class WebsiteApplicationTests {
     @Test
     void jsonTest() {
         User user = new User("abc", "123", "test@test.com");
+    }
+
+    @Autowired
+    private MailServiceImpl mailService;
+
+    @Test
+    void mailTest() {
+        mailService.sendActivationMail("账户激活", "cmjdcyf@qq.com", "test user", "testUrl.com");
+        System.out.println("run comp");
     }
 }
