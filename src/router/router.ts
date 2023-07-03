@@ -5,6 +5,13 @@ import {getLocalToken, getUserRole} from "../api/user";
 
 const routes = [
     {
+        path: '/',
+        name: '主页',
+        meta: {title: '主页'},
+        alias: '/index',
+        component: () => import('../views/Index.vue')
+    },
+    {
         path: '/404',
         name: '404',
         meta: {title: '404'},
