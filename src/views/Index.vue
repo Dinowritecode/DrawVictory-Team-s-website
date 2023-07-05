@@ -1,6 +1,5 @@
 <template>
 <div class="index">
-  <p>主页</p>
 </div>
 </template>
 
@@ -9,5 +8,5 @@
 </script>
 
 <style scoped>
-
+@import url('../assets/styles/index.css');
 </style>
