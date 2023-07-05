@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PendingUserDao extends CrudRepository<PendingUser, String> {
+public interface PendingUserDAO extends CrudRepository<PendingUser, String> {
     PendingUser findOneByUsername(String username);
     PendingUser findOneByEmail(String email);
     List<PendingUser> findAllByUsername(String username);

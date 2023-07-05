@@ -21,8 +21,8 @@ spring:
       max-file-size: 10MB
       max-request-size: 100MB
       enabled: true
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
   data:
     redis:
       host: localhost
@@ -53,8 +53,9 @@ logging:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
   global-config:
     db-config:
       logic-delete-field: is_deleted
-      logic-delete-value: 1
+      logic-delete-value: id
       logic-not-delete-value: 0

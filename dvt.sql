@@ -1,47 +1,160 @@
-create database if not exists dvt;
-use dvt;
+CREATE DATABASE IF NOT EXISTS dvt;
+USE dvt;
 -- 删除表
-drop table if exists sys_user;
-drop table if exists sys_role;
--- 创建角色表
-create table if not exists sys_role
+DROP TABLE IF EXISTS sys_user, sys_role, sys_permission, ref_user_role, ref_role_permission;
+
+-- 角色表
+CREATE TABLE IF NOT EXISTS `sys_role`
 (
-    `rid`       int auto_increment comment 'role id',
-    `role_name` varchar(20)  not null unique comment '角色名',
-    `role_desc` varchar(100) not null comment '角色描述',
-    primary key (`rid`)
-) engine = InnoDB
-  default charset = utf8;
+    `id`          INT AUTO_INCREMENT COMMENT '主键id',
+    `name`        VARCHAR(51)  NOT NULL UNIQUE COMMENT '角色名',
+    `description` VARCHAR(100) NOT NULL COMMENT '角色描述',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_name` (`name`) USING BTREE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT '角色表';
 -- 添加默认角色
-insert into sys_role (rid, role_name, role_desc)
-values (100, 'user', '普通用户'),
-       (101, 'admin', '管理员'),
-       (102, 'super_admin', '超级管理员');
--- 创建用户表
-create table if not exists sys_user
+INSERT INTO sys_role (id, name, description)
+VALUES (100, 'super_admin', '超级管理员'),
+       (200, 'admin', '管理员'),
+       (300, 'user', '普通用户');
+
+-- 用户表
+CREATE TABLE IF NOT EXISTS `sys_user`
 (
-    `uid`           int auto_increment comment 'id',
-    `username`      varchar(20)  not null unique comment '用户名',
-    `password`      char(64)  not null comment '密码(SHA-256)',
-    `email`         varchar(100) not null unique comment '邮箱',
-    `register_time` int          null     default null comment '注册时间戳',
-    `avatar`        blob                  default null comment '头像',
-    `role_id`          int          not null default 100 comment '角色',
-    `status`        tinyint(1)   not null default 1 comment '状态(0停用 1正常)',
-    `is_deleted`    tinyint(1)   not null default 0 comment '是否删除(0正常 1删除)',
-    `version`       int(11)      not null default 1 comment '乐观锁',
-    primary key (`uid`),
-    foreign key (`role_id`) references sys_role (`rid`)
-) engine = InnoDB
-  default charset = utf8;
+    `uid`           INT AUTO_INCREMENT COMMENT '主键id',
+    `username`      VARCHAR(20)  NOT NULL COMMENT '用户名',
+    `password`      CHAR(60)     NOT NULL COMMENT '密码(SHA-256)',
+    `email`         VARCHAR(100) NOT NULL COMMENT '邮箱',
+    `register_time` INT          NULL     DEFAULT NULL COMMENT '注册时间戳',
+    `avatar`        BLOB         NULL     DEFAULT NULL COMMENT '头像',
+    `status`        TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '状态(0-停用 1-正常)',
+    `is_deleted`    int          NOT NULL DEFAULT 0 COMMENT '是否删除[0-正常 非0(=uid)-删除]',
+    `version`       INT(11)      NOT NULL DEFAULT 1 COMMENT '乐观锁字段',
+    PRIMARY KEY (`uid`),
+    UNIQUE KEY `uk_username` (`username`, `is_deleted`) USING BTREE,
+    UNIQUE KEY `uk_email` (`email`, `is_deleted`) USING BTREE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  AUTO_INCREMENT = 1 COMMENT '用户表';
 -- 自动将register_time字段设置为当前时间戳
-create trigger sys_user_register_time
-    before insert
-    on sys_user
-    for each row
-begin
-    set new.register_time = unix_timestamp();
-end;
+CREATE TRIGGER sys_user_register_time
+    BEFORE INSERT
+    ON sys_user
+    FOR EACH ROW
+BEGIN
+    SET NEW.register_time = UNIX_TIMESTAMP();
+END;
+
+-- 权限表
+CREATE TABLE IF NOT EXISTS `sys_permission`
+(
+    `id`          int                                            NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `name`        varchar(50)                                    NOT NULL COMMENT '权限名称',
+    `description` varchar(100) DEFAULT NULL COMMENT '权限描述',
+    `type`        ENUM ('user', 'content', 'management', 'data') NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_name` (`name`) USING BTREE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4 COMMENT ='权限表';
+-- 权限
+INSERT INTO sys_permission (id, name, description, type)
+VALUES (1, 'login', '用户登录权限', 'user'),
+       (2, 'register', '用户注册权限', 'user'),
+       (3, 'view_article', '查看文章权限', 'content'),
+       (4, 'download_file', '下载文件权限', 'content'),
+       (5, 'add_user', '添加用户权限', 'management'),
+       (6, 'edit_user', '修改用户权限', 'management'),
+       (7, 'delete_user', '删除用户权限', 'management'),
+       (8, 'view_data', '查看数据权限', 'data'),
+       (9, 'edit_data', '修改数据权限', 'data'),
+       (10, 'delete_data', '删除数据权限', 'data');
+
+-- 用户角色关联表
+CREATE TABLE IF NOT EXISTS `ref_user_role`
+(
+    `id`      int NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `user_id` int NOT NULL COMMENT '用户ID',
+    `role_id` int NOT NULL COMMENT '角色ID',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_user_role` (`user_id`, `role_id`) USING BTREE,
+    KEY `idx_user_id` (`user_id`) USING BTREE,
+    KEY `idx_role_id` (`role_id`) USING BTREE,
+    CONSTRAINT `fk_user_role_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_user_role_role_id` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4 COMMENT ='用户角色关联表';
+
+-- 角色权限关联表
+CREATE TABLE IF NOT EXISTS `ref_role_permission`
+(
+    `id`            int NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `role_id`       int NOT NULL COMMENT '角色ID',
+    `permission_id` int NOT NULL COMMENT '权限ID',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_role_permission` (`role_id`, `permission_id`) USING BTREE,
+    KEY `idx_role_id` (`role_id`) USING BTREE,
+    KEY `idx_permission_id` (`permission_id`) USING BTREE,
+    CONSTRAINT `fk_role_permission_role_id` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_role_permission_permission_id` FOREIGN KEY (`permission_id`) REFERENCES `sys_permission` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4 COMMENT ='角色权限关联表';
+-- 向role_permission表中插入超级管理员权限记录
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 1);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 2);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 3);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 4);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 5);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 6);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 7);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 8);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 9);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (100, 10);
+
+-- 向role_permission表中插入管理员权限记录
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (200, 1);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (200, 2);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (200, 3);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (200, 4);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (200, 5);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (200, 6);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (200, 7);
+
+-- 向role_permission表中插入普通用户权限记录
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (300, 1);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (300, 2);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (300, 3);
+INSERT INTO ref_role_permission (role_id, permission_id)
+VALUES (300, 4);
+
+
 -- 添加默认超级管理员账户(密码为qo3G89jI5Bqi3W)
-insert into sys_user (username, password, email, role_id)
-values ('super_admin', 'b4422bb1006d65e62ab83f7b401c9aeec3a35a4002c66a7213b912bc9df09079', 'example@example.com', 102);
+INSERT INTO sys_user (uid, username, password, email)
+VALUES (1, 'super_admin', '$2a$10$BVgEje1WboYtyh1Okev4HeTjsPKtnaO0i254zpQYq8r5fu0K002FO', 'example@example.com');
+INSERT INTO ref_user_role(user_id, role_id)
+VALUES (1, 100),
+       (1, 200),
+       (1, 300);

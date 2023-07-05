@@ -6,13 +6,16 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class Result {
-    int code;
+    Code code;
     Object data;
     String msg;
+    Boolean success;
 
-    public Result(int code, Object data) {
-        this.code = code;
-        this.data = data;
+    public static Result success(Code code, Object data, String msg) {
+        return new Result(code, data, msg, true);
     }
 
+    public static Result failure(Code code, Object data, String msg) {
+        return new Result(code, data, msg, false);
+    }
 }

@@ -22,5 +22,4 @@ public interface UserService {
 
     Result setAvatar(User user);
 
-//    Result login(User user, HttpSession session,HttpServletResponse response,boolean autoLogin);
 }

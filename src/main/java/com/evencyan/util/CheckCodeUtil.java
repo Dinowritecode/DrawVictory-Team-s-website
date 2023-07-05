@@ -20,10 +20,14 @@ import java.util.Random;
 @Component
 public class CheckCodeUtil {
 
+    private CheckCodeUtil() {
+    }
+
     public static final String VERIFY_CODES = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static Random random;
+
     @Autowired
-    public void setRandom(Random random){
+    public void setRandom(Random random) {
         CheckCodeUtil.random = random;
     }
 
@@ -31,9 +35,9 @@ public class CheckCodeUtil {
     /**
      * 输出随机验证码图片流,并返回验证码值（一般传入输出流，响应response页面端，Web项目用的较多）
      *
-     * @param w 图片高
-     * @param h 图片宽
-     * @param os 输出流
+     * @param w          图片高
+     * @param h          图片宽
+     * @param os         输出流
      * @param verifySize 验证码长度
      * @return 验证码数据
      */
@@ -45,6 +49,7 @@ public class CheckCodeUtil {
 
     /**
      * 使用系统默认字符源生成验证码
+     *
      * @param verifySize 验证码长度
      * @return 验证码
      */
@@ -54,6 +59,7 @@ public class CheckCodeUtil {
 
     /**
      * 使用指定源生成验证码
+     *
      * @param verifySize 验证码长度
      * @param sources    验证码字符源
      * @return 验证码
@@ -74,8 +80,9 @@ public class CheckCodeUtil {
 
     /**
      * 生成随机验证码文件,并返回验证码值 (生成图片形式，用的较少)
-     * @param w 宽
-     * @param h 高
+     *
+     * @param w          宽
+     * @param h          高
      * @param outputFile 输出文件
      * @param verifySize 验证码长度
      * @return 验证码值
@@ -87,13 +94,13 @@ public class CheckCodeUtil {
     }
 
 
-
     /**
      * 生成指定验证码图像文件
-     * @param w 宽
-     * @param h 高
+     *
+     * @param w          宽
+     * @param h          高
      * @param outputFile 输出文件
-     * @param code 验证码值
+     * @param code       验证码值
      */
     public static void outputImage(int w, int h, File outputFile, String code) throws IOException {
         if (outputFile == null) {
@@ -113,9 +120,10 @@ public class CheckCodeUtil {
 
     /**
      * 输出指定验证码图片流
-     * @param w 宽
-     * @param h 高
-     * @param os 输出流
+     *
+     * @param w    宽
+     * @param h    高
+     * @param os   输出流
      * @param code 验证码值
      */
     public static void outputImage(int w, int h, OutputStream os, String code) throws IOException {
@@ -178,7 +186,7 @@ public class CheckCodeUtil {
         char[] chars = code.toCharArray();
         for (int i = 0; i < verifySize; i++) {
             AffineTransform affine = new AffineTransform();
-            affine.setToRotation(Math.PI / 4 * rand.nextDouble() * (rand.nextBoolean() ? 1 : -1), (w / verifySize) * i + fontSize / 2, h / 2);
+            affine.setToRotation(Math.PI / 4 * rand.nextDouble() * (rand.nextBoolean() ? 1 : -1), ((double) w / verifySize) * i + (double) fontSize / 2, (double) h / 2);
             g2.setTransform(affine);
             g2.drawChars(chars, i, 1, ((w - 10) / verifySize) * i + 5, h / 2 + fontSize / 2 - 10);
         }
@@ -235,8 +243,8 @@ public class CheckCodeUtil {
         int phase = random.nextInt(2);
 
         for (int i = 0; i < h1; i++) {
-            double d = (double) (period >> 1)
-                    * Math.sin((double) i / (double) period
+            double d = period / 2d
+                    * Math.sin((double) i / period
                     + (6.2831853071795862D * (double) phase)
                     / (double) frames);
             g.copyArea(0, i, w1, 1, (int) d, 0);

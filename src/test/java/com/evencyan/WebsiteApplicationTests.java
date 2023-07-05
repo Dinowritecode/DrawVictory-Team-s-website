@@ -1,21 +1,21 @@
 package com.evencyan;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.evencyan.dao.UserDao;
-import com.evencyan.dao.PendingUserDao;
-import com.evencyan.domain.User;
+import com.evencyan.dao.PendingUserDAO;
+import com.evencyan.dao.UserDAO;
+import com.evencyan.domain.LoginUser;
 import com.evencyan.domain.PendingUser;
+import com.evencyan.domain.User;
 import com.evencyan.service.impl.MailServiceImpl;
 import com.evencyan.service.impl.UserServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Random;
 
@@ -23,32 +23,45 @@ import java.util.Random;
 @Slf4j
 class WebsiteApplicationTests {
     @Autowired
-    private UserDao userDao;
+    private UserDAO userDao;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private UserServiceImpl userService;
     @Autowired
-    private PendingUserDao pendingUserDao;
+    private PendingUserDAO pendingUserDao;
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Test
     void contextLoads() {
-        userDao.insert(new User("testuser", DigestUtils.sha256Hex("114514"),"email"));
+        User user = new User("abc","def","email");
+        redisTemplate.opsForValue().set("test", user);
+        User redisUser = (User) redisTemplate.opsForValue().get("test");
+        System.out.println(redisUser);
+    }
+
+    @Test
+    void test2() throws Exception {
+        System.out.println(userDao.selectWithRoleByUid(1));
     }
 
     @Autowired
     private Random random;
+
     @Test
     void userDaoTest() throws Exception {
-        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(User::getEmail, "example@example.com");
+//        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+//        lqw.eq(User::getEmail, "example@example.com");
 //        lqw.select(User::getUid,User::getEmail,User::getUsername);
-        User user = userDao.selectOne(lqw);
-        System.out.println(toJson(user));
+//        User user = userDao.selectOne(lqw);
+//        System.out.println(toJson(user));
 //        System.out.println(userDao.selectById(1));
 //        User user = new User("abcde","123","tesaat@abc.com");
 //        user.setStatus(false);
 //        userDao.insert(user);
+//        User user = new User("testuser", "abcd1123", "abcawd@qq.wa");
+//        userService.register(user);
+        mailService.sendActivationMail("激活","undefined@evencyan.onmicrosoft.com","user","baidu.com");
     }
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
