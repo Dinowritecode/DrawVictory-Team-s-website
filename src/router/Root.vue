@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <el-header class="header">
+  <el-header class="header"><!--网页导航栏-->
     <img class="logo" src="/logo_dark.svg" alt="logo">
     <p class="name">DrawVictory Team</p>
     <p class="name2">绘赢</p>
@@ -19,7 +19,7 @@
       <el-menu-item class="login-register">登录/注册</el-menu-item>
       </router-link>
     </el-menu>
-  </el-header>  <!--网页导航栏-->
+  </el-header>
     <div class="root">
         <router-view></router-view>
     </div>
