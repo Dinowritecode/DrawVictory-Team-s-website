@@ -14,7 +14,7 @@
       <el-menu-item class="items">介绍</el-menu-item>
       </router-link>
     </el-menu>
-    <el-menu class="login-button" background-color="#ff7675" router>
+    <el-menu class="login-button" background-color="#ff7675" router text-color="white">
       <router-link to="/login" class="login-leader">
       <el-menu-item class="login-register">登录/注册</el-menu-item>
       </router-link>
@@ -76,6 +76,12 @@
     color: white;
     user-select: none;
     text-align: center;
+    box-sizing: border-box;
+    border: 0;
+}
+.items:hover{
+    border-bottom: 3px solid #ff7675;
+    animation: all 0.2s ease;
 }
 .login-button{
     position: absolute;
