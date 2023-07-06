@@ -9,7 +9,7 @@ const routes = [
         name: '主页',
         meta: {title: 'DrawVictory Team｜绘赢'},
         alias: '/index',
-        component: () => import('../views/index.vue')
+        component: () => import('../views/Index.vue')
     },
     {
         path: '/404',
