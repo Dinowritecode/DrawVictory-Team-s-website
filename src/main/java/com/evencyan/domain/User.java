@@ -41,9 +41,9 @@ public class User implements Serializable {
     private Integer version;
 
     @TableField(exist = false)
-    private List<Integer> roles;
+    private List<String> roles;
     @TableField(exist = false)
-    private List<Integer> permissions;
+    private List<String> permissions;
 
     public User(String username, String password, String email) {
         this.username = username;

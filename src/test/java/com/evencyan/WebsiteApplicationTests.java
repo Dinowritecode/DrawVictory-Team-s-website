@@ -42,7 +42,6 @@ class WebsiteApplicationTests {
 
     @Test
     void test2() throws Exception {
-        System.out.println(userDao.selectWithRoleByUid(1));
     }
 
     @Autowired

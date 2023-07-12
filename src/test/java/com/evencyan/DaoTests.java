@@ -21,7 +21,7 @@ public class DaoTests {
 
     @Test
     void permissionDaoTest() {
-        System.out.println(permissionDao.selectPermissionsByUid(1));
+        System.out.println(permissionDao.selectByUid(1));
     }
 
     @Test
