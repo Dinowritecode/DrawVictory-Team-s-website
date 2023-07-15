@@ -1,6 +1,6 @@
 package com.evencyan.service.impl;
 
-import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson.JSON;
 import com.evencyan.controller.Code;
 import com.evencyan.controller.Result;
 import com.evencyan.domain.LoginUser;
@@ -9,16 +9,15 @@ import com.evencyan.exception.BusinessException;
 import com.evencyan.service.AuthService;
 import com.evencyan.util.JwtUtil;
 import com.evencyan.util.RedisCache;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -34,10 +33,15 @@ public class AuthServiceImpl implements AuthService {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         if (authenticate == null) throw new BusinessException(Code.LOGIN_ERR, null, "登录失败");
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        String uuid = JwtUtil.getUUID();
-        loginUser.setTokenUUID(uuid);
-        String token = JwtUtil.createJWT(uuid, JSON.toJSONString(loginUser.getUser()), JwtUtil.JWT_TTL);
-        response.setHeader("Authorization", "Bearer " + token);
+        String uuid = JwtUtil.getUUID(); // 生成一个UUID
+        loginUser.setTokenUUID(uuid); // 将UUID存入LoginUser以便在注销时在redis中删除
+        Map<String, String> token = new HashMap<>();
+        token.put("uid", loginUser.getUser().getUid().toString());
+        token.put("username", loginUser.getUser().getUsername());
+        token.put("roles", loginUser.getUser().getRoles().toString());
+        token.put("permissions", loginUser.getUser().getPermissions().toString());
+        response.setHeader("Authorization", "Bearer " +
+                JwtUtil.createJWT(uuid, JSON.toJSONString(token), JwtUtil.JWT_TTL));
         redisCache.setCacheObject("token:" + uuid, loginUser, JwtUtil.JWT_TTL.intValue(), TimeUnit.MILLISECONDS);
         return Result.success(Code.LOGIN_OK, null, "登录成功");
     }

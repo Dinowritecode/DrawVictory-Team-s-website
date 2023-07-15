@@ -4,6 +4,8 @@ import com.evencyan.controller.Result;
 import com.evencyan.domain.User;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 public interface UserService {
 
@@ -22,4 +24,5 @@ public interface UserService {
 
     Result setAvatar(User user);
 
+    Result getUser(Integer uid, List<String> fields);
 }

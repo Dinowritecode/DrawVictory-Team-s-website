@@ -1,12 +1,17 @@
 package com.evencyan.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -17,17 +22,23 @@ public class LoginUser implements UserDetails {
 
     private String tokenUUID;
 
+    private transient List<SimpleGrantedAuthority> authorities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        if (authorities == null)
+            authorities = user.getPermissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return authorities;
     }
 
     @Override
+    @JSONField(serialize = false)
     public String getPassword() {
         return user.getPassword();
     }
 
     @Override
+    @JSONField(serialize = false)
     public String getUsername() {
         return user.getUsername();
     }
@@ -39,7 +50,7 @@ public class LoginUser implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.getStatus();
     }
 
     @Override

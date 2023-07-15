@@ -6,7 +6,11 @@ import com.evencyan.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.PrintWriter;
@@ -39,6 +43,17 @@ public class ExceptionAdvice {
         log.error("异常 {} 抛出于 {}.{}(){}", e.getMsg(), stackTraceElement.getClassName(),
                 stackTraceElement.getMethodName(), (e.getData() == null ? "" : " Data: " + e.getData()));
         return Result.failure(e.getCode(), null, e.getMsg());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public Result doAuthenticationException(AuthenticationException e) {
+        return Result.failure(Code.AUTH_ERR, null, e.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Result doAccessDeniedException(AccessDeniedException e) {
+        return Result.failure(Code.AUTH_ERR, null, "您无权访问此资源");
     }
 
     @ExceptionHandler(Exception.class)

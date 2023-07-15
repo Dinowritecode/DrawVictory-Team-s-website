@@ -28,8 +28,9 @@ CREATE TABLE IF NOT EXISTS `sys_user`
     `email`         VARCHAR(100) NOT NULL COMMENT '邮箱',
     `register_time` INT          NULL     DEFAULT NULL COMMENT '注册时间戳',
     `avatar`        BLOB         NULL     DEFAULT NULL COMMENT '头像',
-    `status`        TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '状态(0-停用 1-正常)',
+    `status`        TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '状态(0-锁定/封禁 1-正常)',
     `is_deleted`    int          NOT NULL DEFAULT 0 COMMENT '是否删除[0-正常 非0(=uid)-删除]',
+    `is_enabled`     TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '是否启用(0-禁用 1-启用) 指永久性封禁等',
     `version`       INT(11)      NOT NULL DEFAULT 1 COMMENT '乐观锁字段',
     PRIMARY KEY (`uid`),
     UNIQUE KEY `uk_username` (`username`, `is_deleted`) USING BTREE,
@@ -49,27 +50,30 @@ END;
 -- 权限表
 CREATE TABLE IF NOT EXISTS `sys_permission`
 (
-    `id`          int                                            NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `name`        varchar(50)                                    NOT NULL COMMENT '权限名称',
+    `id`          int         NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `name`        varchar(50) NOT NULL COMMENT '权限名称',
     `description` varchar(100) DEFAULT NULL COMMENT '权限描述',
-    `type`        ENUM ('user', 'content', 'management', 'data') NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_name` (`name`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4 COMMENT ='权限表';
 -- 权限
-INSERT INTO sys_permission (id, name, description, type)
-VALUES (1, 'login', '用户登录权限', 'user'),
-       (2, 'register', '用户注册权限', 'user'),
-       (3, 'view_article', '查看文章权限', 'content'),
-       (4, 'download_file', '下载文件权限', 'content'),
-       (5, 'add_user', '添加用户权限', 'management'),
-       (6, 'edit_user', '修改用户权限', 'management'),
-       (7, 'delete_user', '删除用户权限', 'management'),
-       (8, 'view_data', '查看数据权限', 'data'),
-       (9, 'edit_data', '修改数据权限', 'data'),
-       (10, 'delete_data', '删除数据权限', 'data');
+INSERT INTO sys_permission (id, name, description)
+VALUES (1, 'user:view_user', '查看用户权限'),
+       (14, 'user:edit_own_profile', '修改个人信息权限'),
+       (2, 'content:view_article', '查看文章权限'),
+       (3, 'content:download_file', '下载文件权限'),
+       (4, 'content:add_article', '添加文章权限'),
+       (5, 'content:edit_article', '修改文章权限'),
+       (6, 'content:delete_article', '删除文章权限'),
+       (7, 'management:add_user', '添加用户权限'),
+       (8, 'management:edit_user', '修改用户权限'),
+       (9, 'management:delete_user', '删除用户权限'),
+       (10, 'data:view_data', '查看数据权限'),
+       (11, 'data:edit_data', '修改数据权限'),
+       (12, 'data:delete_data', '删除数据权限'),
+       (13, 'data:add_data', '添加数据权限');
 
 -- 用户角色关联表
 CREATE TABLE IF NOT EXISTS `ref_user_role`
@@ -104,52 +108,36 @@ CREATE TABLE IF NOT EXISTS `ref_role_permission`
   DEFAULT CHARSET = utf8mb4 COMMENT ='角色权限关联表';
 -- 向role_permission表中插入超级管理员权限记录
 INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 1);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 2);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 3);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 4);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 5);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 6);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 7);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 8);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 9);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 10);
-
+VALUES (100, 1),
+       (100, 2),
+       (100, 3),
+       (100, 4),
+       (100, 5),
+       (100, 6),
+       (100, 7),
+       (100, 8),
+       (100, 9),
+       (100, 10),
+       (100, 11),
+       (100, 12),
+       (100, 13),
+       (100, 14);
 -- 向role_permission表中插入管理员权限记录
 INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 1);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 2);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 3);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 4);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 5);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 6);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 7);
+VALUES (200, 1),
+       (200, 2),
+       (200, 3),
+       (200, 4),
+       (200, 5),
+       (200, 6),
+       (200, 14);
 
 -- 向role_permission表中插入普通用户权限记录
 INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (300, 1);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (300, 2);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (300, 3);
-INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (300, 4);
-
+VALUES (300, 1),
+       (300, 2),
+       (300, 3),
+       (300, 14);
 
 -- 添加默认超级管理员账户(密码为qo3G89jI5Bqi3W)
 INSERT INTO sys_user (uid, username, password, email)

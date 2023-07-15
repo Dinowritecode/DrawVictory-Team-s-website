@@ -39,7 +39,11 @@ public enum Code {
     LOGOUT_ERR(6006),
 
     TOKEN_ILLEGAL_ERR(7001),
-    TOKEN_EXPIRED_ERR(7002),;
+    TOKEN_EXPIRED_ERR(7002),
+
+    AUTH_ERR(8001),
+
+    ACCESS_DENIED_ERR(9001),;
 
     private final int value;
 

@@ -11,7 +11,7 @@ public class Result {
     String msg;
     Boolean success;
 
-    public static Result success(Code code, Object data, String msg) {
+    public static <T> Result success(Code code, T data, String msg) {
         return new Result(code, data, msg, true);
     }
 

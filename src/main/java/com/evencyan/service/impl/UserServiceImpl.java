@@ -1,6 +1,7 @@
 package com.evencyan.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.evencyan.controller.Code;
 import com.evencyan.controller.Result;
 import com.evencyan.dao.*;
@@ -16,12 +17,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -103,5 +106,19 @@ public class UserServiceImpl implements UserService {
         updateUser.setAvatar(user.getAvatar());
         if (userDAO.updateById(updateUser) == 0) throw new SystemException(Code.UPDATE_ERR, user, "头像修改失败");
         return Result.success(Code.UPDATE_OK, null, "头像修改成功");
+    }
+
+    @Override
+    public Result getUser(Integer uid, List<String> fields) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.select(fields).eq("uid", uid);
+        User user;
+        if (fields == null) return Result.success(Code.GET_OK, userDAO.selectById(uid), "获取成功");
+        try {
+            user = userDAO.selectOne(wrapper);
+        } catch (BadSqlGrammarException e) {
+            throw new BusinessException(Code.GET_ERR, null, "非法字段名");
+        }
+        return Result.success(Code.GET_OK, user, "获取成功");
     }
 }

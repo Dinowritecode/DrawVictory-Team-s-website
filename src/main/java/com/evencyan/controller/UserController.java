@@ -11,9 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -55,8 +58,14 @@ public class UserController {
         return userService.setAvatar(user);
     }
 
+    @GetMapping("/{uid}")
+    public Result getUser(@PathVariable Integer uid, @Nullable @RequestParam List<String> fields) {
+        return userService.getUser(uid, fields);
+    }
+
     @RequestMapping("/test")
+    @PreAuthorize("hasAuthority('view_user2')")
     public Result test() {
-        return Result.failure(Code.UNKNOWN_ERR, null, null);
+        return Result.success(Code.GET_OK, "ok", null);
     }
 }

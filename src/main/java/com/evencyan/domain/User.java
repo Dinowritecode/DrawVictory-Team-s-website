@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @TableName("sys_user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(value = {"password"}, allowSetters = true)
 public class User implements Serializable {
     @Serial
     @TableField(exist = false)
@@ -26,12 +27,11 @@ public class User implements Serializable {
     @TableId(type = IdType.AUTO)
     private Integer uid;
     private Integer registerTime;
-    @JsonIgnore
     private Boolean status;
     @TableField(select = false)
     @TableLogic(delval = "uid")
     private Boolean isDeleted;
-    @JsonIgnoreProperties(value = {"password"}, allowSetters = true)
+    private Boolean isEnabled;
     @JSONField(serialize = false)
     private String password;
     private String username, email;

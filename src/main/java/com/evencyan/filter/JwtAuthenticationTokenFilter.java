@@ -11,6 +11,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private final RedisCache redisCache;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("Authorization");
         if (StringUtils.isEmpty(token) || !token.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -45,7 +46,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             throw new BusinessException(Code.TOKEN_ILLEGAL_ERR, null, "非法token", e.getCause());
         }
         LoginUser loginUser = redisCache.getCacheObject(redisKey);
-        if (loginUser == null) throw new BusinessException(Code.TOKEN_EXPIRED_ERR, null, "token不存在或已过期");
+//        if (loginUser == null) throw new BusinessException(Code.TOKEN_EXPIRED_ERR, null, "token不存在或已过期");
+        if (loginUser == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
