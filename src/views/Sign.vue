@@ -44,10 +44,10 @@
           <span>账户名称</span>
           <p v-show="tips.username" class="tip">用户名格式错误
             <el-tooltip
-                class="box-item"
-                content="用户名只允许包含数字，大小写字母，下划线和连词线，且长度在4-16位之间"
-                effect="dark"
-                placement="right"
+              class="box-item"
+              content="用户名只允许包含数字，大小写字母，下划线和连词线，且长度在4-16位之间"
+              effect="dark"
+              placement="right"
             >
               <el-icon color="grey">
                 <QuestionFilled/>
@@ -66,10 +66,10 @@
           <span>注册密码</span>
           <p v-show="tips.password" class="tip">密码格式错误
             <el-tooltip
-                class="box-item"
-                content="密码需包含字母，符号或者数字中至少两项，且长度在6-16位之间"
-                effect="dark"
-                placement="right"
+              class="box-item"
+              content="密码需包含字母，符号或者数字中至少两项，且长度在6-16位之间"
+              effect="dark"
+              placement="right"
             >
               <el-icon color="grey">
                 <QuestionFilled/>
@@ -78,7 +78,7 @@
           </p>
         </div>
         <div class="input_box">
-          <input v-model.trim="password" required type="password" @blur="checkPwdIsSame"
+          <input v-model.trim="confirmPassword" required type="password" @blur="checkPwdIsSame"
                  @keydown.enter="verify">
           <span>确认密码</span>
           <p v-show="tips.diffPwd" class="tip">两次密码不一致</p>
@@ -92,7 +92,7 @@
 
 <script lang="ts" setup>
 import {reactive, ref} from 'vue';
-import {Code, RegUser, SpringObject} from '../api/model'
+import {RegUser, Response} from '../api/model'
 import axios from "../api/request";
 import {ElLoading, ElMessage, ElNotification} from 'element-plus'
 import {QuestionFilled} from "@element-plus/icons-vue";
@@ -100,7 +100,7 @@ import {useRoute, useRouter} from "vue-router";
 
 const isLogin = ref(useRoute().name === 'login');//注册界面or登录界面
 const user = reactive<RegUser>({username: "", password: "", email: ""});//提交的用户对象
-const password = ref('');//重复输入的密码
+const confirmPassword = ref('');//重复输入的密码
 const verificationCode = ref('');//验证码
 const verificationId = ref('');//验证id
 const verificationImg = ref('');//验证码图片
@@ -110,10 +110,10 @@ const router = useRouter();
 
 function changeVerificationImg(): void {
   axios.get('/api/users/verify?' + new Date().getMilliseconds(), {responseType: 'blob'}).then(
-      resp => {
-        verificationId.value = resp.headers['verification-id'];
-        verificationImg.value = URL.createObjectURL(new Blob([resp.data], {type: 'image/png'}));
-      }
+    resp => {
+      verificationId.value = resp.headers['verification-id'];
+      verificationImg.value = URL.createObjectURL(new Blob([resp.data], {type: 'image/png'}));
+    }
   )
 }
 
@@ -145,7 +145,7 @@ function checkEmail(): boolean {
 }
 
 function checkPwdIsSame(): boolean {
-  if (password.value === '' || user.password !== password.value) {
+  if (confirmPassword.value === '' || user.password !== confirmPassword.value) {
     tips.diffPwd = true;
     return false
   }
@@ -160,7 +160,7 @@ function cleanInfo(): void {
   for (let key in user) {
     user[key] = '';
   }
-  password.value = '';
+  confirmPassword.value = '';
   verificationCode.value = '';
 }
 
@@ -184,14 +184,14 @@ async function register() {
     spinner: 'el-icon-loading',
     background: 'rgba(0, 0, 0, 0.7)'
   });
-  const {data: resp} = await axios.post<SpringObject<null>>('/api/users/register', user, {
+  const {data: resp} = await axios.post<Response>('/api/users/register', user, {
     params: {
       verificationCode: verificationCode.value,
       verificationId: verificationId.value
     }
   });
   loading.close();
-  if (resp.code === Code.REGISTER_OK) {
+  if (resp.success) {
     cleanInfo();
     onVerify.value = false;
     ElNotification({
@@ -199,7 +199,7 @@ async function register() {
       message: resp.msg,
       type: 'success',
     });
-  } else if (resp.code === Code.REGISTER_VERIFICATION_CODE_ERR) {
+  } else if (!resp.success) {
     verificationCode.value = '';
     onVerify.value = false;
     ElNotification({

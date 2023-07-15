@@ -1,5 +1,6 @@
 export interface RegUser {
     [index: string]: string;
+
     /** 用户名 */
     username: string,
     /** 用户密码 */
@@ -8,14 +9,62 @@ export interface RegUser {
     email: string
 }
 
-export interface User {
-    /** 用户id */
-    id: number,
-    /** 用户名 */
-    username: string,
-    /** 用户头像url */
-    avatar: string
+export class User {
+    private _uid: number;
+    private _username: string;
+    private _email: string;
+    private _roles: string[];
+    private _permissions: string[];
+
+    public get uid() {
+        return this._uid;
+    }
+
+    public set uid(uid: number) {
+        this._uid = uid;
+    }
+
+    public get username() {
+        return this._username;
+    }
+
+    public set username(username: string) {
+        this._username = username;
+    }
+
+    public get email() {
+        return this._email;
+    }
+
+    public set email(email: string) {
+        this._email = email;
+    }
+
+    public get roles() {
+        return this._roles;
+    }
+
+    public set roles(roles: string[]) {
+        this._roles = roles;
+    }
+
+    public get permissions() {
+        return this._permissions;
+    }
+
+    public set permissions(permissions: string[]) {
+        this._permissions = permissions;
+    }
+
+    constructor(uid: number, username: string, email: string, roles: string[], permissions: string[]) {
+        this._uid = uid;
+        this._username = username;
+        this._email = email;
+        this._roles = roles;
+        this._permissions = permissions;
+    }
 }
+
 
 /**
  * @param T data数据类型
@@ -26,61 +75,9 @@ export interface Response<T = null> {
     /** 数据 */
     data: T | null,
     /** 信息 */
-    msg: string | null
-}
-
-// 如果 spring 错误，返回的对象格式
-export interface SpringError {
-    timestamp: string,
-    status: number,
-    error: string,
-    msg: string,
-    path: string
-}
-
-// 如果 spring 成功，返回 list 情况
-export interface SpringList<T> {
-    data: T[],
     msg?: string,
-    code: number
-}
-
-// 如果 spring 成功，返回 page 情况
-export interface SpringPage<T> {
-    code: number,
-    data: { list: T[], total: number },
-    msg?: string
-}
-
-export interface SpringObject<T> {
-    code: number,
-    data: T,
-    /** 提示信息 */
-    msg: string
-}
-
-// 如果 spring 成功，返回 string 情况
-export interface SpringString {
-    data: string,
-    msg?: string,
-    code: number
-}
-
-import {AxiosResponse} from "axios";
-
-export interface AxiosRespError extends AxiosResponse<SpringError> {
-}
-
-export interface AxiosRespList<T> extends AxiosResponse<SpringList<T>> {
-}
-
-export interface AxiosRespPage<T> extends AxiosResponse<SpringPage<T>> {
-}
-
-export interface AxiosRespString extends AxiosResponse<SpringString> {
-}
-
-export interface AxiosRespObject<T> extends AxiosResponse<SpringObject<T>> {
+    /** 是否成功 */
+    success: boolean;
 }
 
 export enum Code {
@@ -110,10 +107,4 @@ export enum Code {
     UNKNOWN_ERR = 9999,
     AUTO_LOGIN_ERR = 6002,
     LOGIN_ERR = 6003
-}
-
-export const SpringObjectError: SpringObject<any> = {
-    code: Code.UNKNOWN_ERR,
-    data: null,
-    msg: '系统繁忙,请稍后再试'
 }

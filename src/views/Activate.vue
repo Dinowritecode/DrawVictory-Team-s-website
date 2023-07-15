@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import axios from "../api/request";
-import {Code, SpringObject} from "../api/model";
+import {Code, Response} from "../api/model";
 
 const msg = ref('激活中..');
 const isSuccess = ref(false);//是否激活成功
@@ -29,7 +29,7 @@ if (token === '')
 else activate();
 
 async function activate() {
-    const {data: resp} = await axios.get<SpringObject<null>>('/api/users/activate/' + token);
+    const {data: resp} = await axios.post<Response>('/api/users/activate/' + token);
     msg.value = resp.msg ?? '激活失败';
     if (resp.code === Code.ACTIVATE_OK) {
         isSuccess.value = true;
