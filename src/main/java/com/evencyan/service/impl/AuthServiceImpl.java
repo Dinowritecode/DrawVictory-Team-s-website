@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
         token.put("permissions", loginUser.getUser().getPermissions().toString());
         response.setHeader("Authorization", "Bearer " +
                 JwtUtil.createJWT(uuid, JSON.toJSONString(token), JwtUtil.JWT_TTL));
-        redisCache.setCacheObject("token:" + uuid, loginUser, JwtUtil.JWT_TTL.intValue(), TimeUnit.MILLISECONDS);
+        redisCache.setCacheObject("token:" + uuid, loginUser, JwtUtil.JWT_TTL, TimeUnit.MILLISECONDS);
         return Result.success(Code.LOGIN_OK, null, "登录成功");
     }
 

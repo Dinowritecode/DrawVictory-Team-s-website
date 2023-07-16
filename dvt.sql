@@ -24,13 +24,13 @@ CREATE TABLE IF NOT EXISTS `sys_user`
 (
     `uid`           INT AUTO_INCREMENT COMMENT '主键id',
     `username`      VARCHAR(20)  NOT NULL COMMENT '用户名',
-    `password`      CHAR(60)     NOT NULL COMMENT '密码(SHA-256)',
+    `password`      CHAR(60)     NOT NULL COMMENT '密码',
     `email`         VARCHAR(100) NOT NULL COMMENT '邮箱',
     `register_time` INT          NULL     DEFAULT NULL COMMENT '注册时间戳',
     `avatar`        BLOB         NULL     DEFAULT NULL COMMENT '头像',
     `status`        TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '状态(0-锁定/封禁 1-正常)',
     `is_deleted`    int          NOT NULL DEFAULT 0 COMMENT '是否删除[0-正常 非0(=uid)-删除]',
-    `is_enabled`     TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '是否启用(0-禁用 1-启用) 指永久性封禁等',
+    `is_enabled`    TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '是否启用(0-禁用 1-启用) 指永久性封禁等',
     `version`       INT(11)      NOT NULL DEFAULT 1 COMMENT '乐观锁字段',
     PRIMARY KEY (`uid`),
     UNIQUE KEY `uk_username` (`username`, `is_deleted`) USING BTREE,
@@ -38,14 +38,6 @@ CREATE TABLE IF NOT EXISTS `sys_user`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   AUTO_INCREMENT = 1 COMMENT '用户表';
--- 自动将register_time字段设置为当前时间戳
-CREATE TRIGGER sys_user_register_time
-    BEFORE INSERT
-    ON sys_user
-    FOR EACH ROW
-BEGIN
-    SET NEW.register_time = UNIX_TIMESTAMP();
-END;
 
 -- 权限表
 CREATE TABLE IF NOT EXISTS `sys_permission`
@@ -60,20 +52,20 @@ CREATE TABLE IF NOT EXISTS `sys_permission`
   DEFAULT CHARSET = utf8mb4 COMMENT ='权限表';
 -- 权限
 INSERT INTO sys_permission (id, name, description)
-VALUES (1, 'user:view_user', '查看用户权限'),
-       (14, 'user:edit_own_profile', '修改个人信息权限'),
-       (2, 'content:view_article', '查看文章权限'),
-       (3, 'content:download_file', '下载文件权限'),
-       (4, 'content:add_article', '添加文章权限'),
-       (5, 'content:edit_article', '修改文章权限'),
-       (6, 'content:delete_article', '删除文章权限'),
-       (7, 'management:add_user', '添加用户权限'),
-       (8, 'management:edit_user', '修改用户权限'),
-       (9, 'management:delete_user', '删除用户权限'),
-       (10, 'data:view_data', '查看数据权限'),
-       (11, 'data:edit_data', '修改数据权限'),
-       (12, 'data:delete_data', '删除数据权限'),
-       (13, 'data:add_data', '添加数据权限');
+VALUES (101, 'user:view_user', '查看用户权限'),
+       (102, 'user:edit_own_profile', '修改个人信息权限'),
+       (201, 'content:view_article', '查看文章权限'),
+       (202, 'content:download_file', '下载文件权限'),
+       (203, 'content:add_article', '添加文章权限'),
+       (204, 'content:edit_article', '修改文章权限'),
+       (205, 'content:delete_article', '删除文章权限'),
+       (301, 'management:add_user', '添加用户权限'),
+       (302, 'management:edit_user', '修改用户权限'),
+       (303, 'management:delete_user', '删除用户权限'),
+       (401, 'data:view_data', '查看数据权限'),
+       (402, 'data:edit_data', '修改数据权限'),
+       (403, 'data:delete_data', '删除数据权限'),
+       (404, 'data:add_data', '添加数据权限');
 
 -- 用户角色关联表
 CREATE TABLE IF NOT EXISTS `ref_user_role`
@@ -106,38 +98,39 @@ CREATE TABLE IF NOT EXISTS `ref_role_permission`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4 COMMENT ='角色权限关联表';
+
 -- 向role_permission表中插入超级管理员权限记录
 INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (100, 1),
-       (100, 2),
-       (100, 3),
-       (100, 4),
-       (100, 5),
-       (100, 6),
-       (100, 7),
-       (100, 8),
-       (100, 9),
-       (100, 10),
-       (100, 11),
-       (100, 12),
-       (100, 13),
-       (100, 14);
+VALUES (100, 101),
+       (100, 102),
+       (100, 201),
+       (100, 202),
+       (100, 203),
+       (100, 204),
+       (100, 205),
+       (100, 301),
+       (100, 302),
+       (100, 303),
+       (100, 401),
+       (100, 402),
+       (100, 403),
+       (100, 404);
 -- 向role_permission表中插入管理员权限记录
 INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (200, 1),
-       (200, 2),
-       (200, 3),
-       (200, 4),
-       (200, 5),
-       (200, 6),
-       (200, 14);
+VALUES (200, 101),
+       (200, 102),
+       (200, 201),
+       (200, 202),
+       (200, 203),
+       (200, 204),
+       (200, 205);
 
 -- 向role_permission表中插入普通用户权限记录
 INSERT INTO ref_role_permission (role_id, permission_id)
-VALUES (300, 1),
-       (300, 2),
-       (300, 3),
-       (300, 14);
+VALUES (300, 101),
+       (300, 102),
+       (300, 201),
+       (300, 204);
 
 -- 添加默认超级管理员账户(密码为qo3G89jI5Bqi3W)
 INSERT INTO sys_user (uid, username, password, email)
@@ -146,3 +139,23 @@ INSERT INTO ref_user_role(user_id, role_id)
 VALUES (1, 100),
        (1, 200),
        (1, 300);
+
+
+-- 添加默认角色
+CREATE TRIGGER insert_user_role
+    AFTER INSERT
+    ON sys_user
+    FOR EACH ROW
+BEGIN
+    INSERT INTO ref_user_role (user_id, role_id)
+    VALUES (NEW.uid, 300);
+END;
+
+-- 自动将register_time字段设置为当前时间戳
+CREATE TRIGGER sys_user_register_time
+    BEFORE INSERT
+    ON sys_user
+    FOR EACH ROW
+BEGIN
+    SET NEW.register_time = UNIX_TIMESTAMP();
+END;

@@ -23,10 +23,5 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
             throw new BadCredentialsException(this.messages
                     .getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "用户名或密码错误"));
         }
-        if (!userDetails.isAccountNonLocked()) {
-            log.debug("用户帐户被锁定");
-            throw new BadCredentialsException(this.messages
-                    .getMessage("AbstractUserDetailsAuthenticationProvider.locked", "用户帐户被锁定，请联系管理员"));
-        }
     }
 }

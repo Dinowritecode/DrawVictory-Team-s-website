@@ -1,10 +1,9 @@
 package com.evencyan.config;
 
 import com.evencyan.filter.JwtAuthenticationTokenFilter;
-import com.evencyan.handler.AccessDeniedHandlerImpl;
-import com.evencyan.handler.AuthenticationEntryPointImpl;
 import com.evencyan.security.CustomDaoAuthenticationProvider;
-import lombok.RequiredArgsConstructor;
+import com.evencyan.security.CustomPostAuthenticationChecks;
+import com.evencyan.security.CustomPreAuthenticationChecks;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,28 +40,33 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter,
-                                           AuthenticationEntryPoint authenticationEntryPoint, AccessDeniedHandler accessDeniedHandler) throws Exception {
+                                           AuthenticationEntryPoint authenticationEntryPoint, AccessDeniedHandler accessDeniedHandler
+    ) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(
                                 "/auth/login", "/users/verify", "/users/register",
                                 "/users/activate/*").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(handling -> handling
+                .exceptionHandling(config -> config
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
                 .build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
-        DaoAuthenticationProvider authProvider = new CustomDaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,
+                                                         CustomPreAuthenticationChecks preAuthenticationChecks,
+                                                         CustomPostAuthenticationChecks postAuthenticationChecks) {
+        DaoAuthenticationProvider authenticationProvider = new CustomDaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setPreAuthenticationChecks(preAuthenticationChecks);
+        authenticationProvider.setPostAuthenticationChecks(postAuthenticationChecks);
+        return authenticationProvider;
     }
 
 }

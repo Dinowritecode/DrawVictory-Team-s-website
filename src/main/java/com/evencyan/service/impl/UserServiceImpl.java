@@ -4,15 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.evencyan.controller.Code;
 import com.evencyan.controller.Result;
-import com.evencyan.dao.*;
-import com.evencyan.domain.*;
+import com.evencyan.dao.PendingUserDAO;
+import com.evencyan.dao.RoleDAO;
+import com.evencyan.dao.UserDAO;
+import com.evencyan.domain.PendingUser;
+import com.evencyan.domain.User;
 import com.evencyan.exception.BusinessException;
 import com.evencyan.exception.SystemException;
 import com.evencyan.service.MailService;
 import com.evencyan.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
+    private final RoleDAO roleDAO;
     private final PendingUserDAO pendingUserDAO;
     private final RedisTemplate<String, String> redisTemplate;
     private final MailService mailService;
@@ -94,7 +97,6 @@ public class UserServiceImpl implements UserService {
         mailService.sendActivationMail("账号激活", pendingUser.getEmail(), pendingUser.getUsername(),
                 location + "/activate.html?" + pendingUser.getUid());//发送激活邮件
         log.info("注册成功 pendingUid:" + pendingUserUid);
-
 
         return Result.success(Code.REGISTER_OK, null, "请查收邮箱并在一小时内完成激活");
     }

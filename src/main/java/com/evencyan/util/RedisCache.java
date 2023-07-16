@@ -37,7 +37,7 @@ public class RedisCache {
      * @param timeout  时间
      * @param timeUnit 时间颗粒度
      */
-    public <T> void setCacheObject(final String key, final T value, final Integer timeout, final TimeUnit timeUnit) {
+    public <T> void setCacheObject(final String key, final T value, final Long timeout, final TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, value, timeout, timeUnit);
     }
 
@@ -159,7 +159,7 @@ public class RedisCache {
      * @param key
      * @return
      */
-    public <T> Map<String, T> getCacheMap(final String key) {
+    public <K, V> Map<K, V> getCacheMap(final String key) {
         return redisTemplate.opsForHash().entries(key);
     }
 
@@ -214,7 +214,7 @@ public class RedisCache {
      * @param pattern 字符串前缀
      * @return 对象列表
      */
-    public Collection<String> keys(final String pattern) {
+    public <T> Set<T> keys(final String pattern) {
         return redisTemplate.keys(pattern);
     }
 }

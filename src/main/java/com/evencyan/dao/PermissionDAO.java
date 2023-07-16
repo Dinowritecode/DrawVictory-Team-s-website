@@ -16,7 +16,7 @@ public interface PermissionDAO{
                 LEFT JOIN `sys_permission` p ON rp.`permission_id` = p.`id`
             WHERE u.`uid` = #{uid}
                 AND u.`is_deleted` = 0
-                AND u.`status` = 1
+                AND u.`is_enabled` = 1
             """)
     List<String> selectByUid(Integer uid);
 }

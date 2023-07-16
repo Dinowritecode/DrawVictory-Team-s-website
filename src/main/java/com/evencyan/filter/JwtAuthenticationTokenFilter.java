@@ -2,7 +2,6 @@ package com.evencyan.filter;
 
 import com.evencyan.controller.Code;
 import com.evencyan.domain.LoginUser;
-import com.evencyan.domain.User;
 import com.evencyan.exception.BusinessException;
 import com.evencyan.util.JwtUtil;
 import com.evencyan.util.RedisCache;
@@ -13,11 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.web.SecurityContextDsl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -49,6 +45,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 //        if (loginUser == null) throw new BusinessException(Code.TOKEN_EXPIRED_ERR, null, "token不存在或已过期");
         if (loginUser == null) {
             filterChain.doFilter(request, response);
+            response.setHeader("Authorization", "Bearer ");
             return;
         }
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());

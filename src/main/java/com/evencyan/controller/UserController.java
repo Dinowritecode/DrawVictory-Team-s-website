@@ -1,6 +1,5 @@
 package com.evencyan.controller;
 
-import com.evencyan.dao.UserDAO;
 import com.evencyan.domain.User;
 import com.evencyan.exception.BusinessException;
 import com.evencyan.service.UserService;
@@ -59,13 +58,16 @@ public class UserController {
     }
 
     @GetMapping("/{uid}")
+    @PreAuthorize("@security.hasPermission('user:view_user')")
     public Result getUser(@PathVariable Integer uid, @Nullable @RequestParam List<String> fields) {
         return userService.getUser(uid, fields);
     }
 
     @RequestMapping("/test")
-    @PreAuthorize("hasAuthority('view_user2')")
+    @PreAuthorize("@security.hasPermission('view_user')")
     public Result test() {
         return Result.success(Code.GET_OK, "ok", null);
     }
+
+//    public Result
 }
