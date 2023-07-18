@@ -3,7 +3,7 @@
     <div class="head">
       <img alt="logo" src="/logo_dark.svg" width="90px">
       <h1>DrawVictory Team</h1>
-      <p>加入官网，向我们反馈，参与到我们未来的活动中去。</p>
+      <p>加入官网，向我们反馈，参与到我们未来的活动中去</p>
     </div>
     <transition name="el-fade-in">
       <div v-if="onVerify" id="mask"></div>
@@ -15,7 +15,7 @@
           为什么要进行人机验证？我们只是想确认您是否是机器人，避免向服务器发送重复的请求</p>
         <input v-model.trim="verificationCode" placeholder='请输入验证码'
                @keydown.enter="register">
-        <img :src='verificationImg' alt="验证码">
+        <img :src='verificationImg' alt="正在加载中...">
         <button id='bto' @click="register">确定</button>
         <p id="verification_close" @click="onVerify=false">×</p>
         <a @click="changeVerificationImg">看不清？换一张</a>
@@ -29,10 +29,11 @@
           <span>账户名称</span>
         </div>
         <div class="input_box">
-          <input v-model.trim="user.password" required type="password" autocomplete="current-password">
+          <input v-model.trim="user.password" required type="password" autocomplete="current-password"
+                 @keydown.enter="login">
           <span>账户密码</span>
         </div>
-        <button class="login sign_button">登录</button>
+        <button class="login sign_button" @click="login">登录</button>
         <a @click="isLogin=!isLogin;cleanInfo();router.replace('/register')">没有账户？立即注册</a>
       </div>
     </transition>
@@ -165,7 +166,7 @@ function cleanInfo(): void {
 }
 
 function verify(): boolean {
-  if (checkUsername() && checkEmail() && checkPassword() && checkPwdIsSame()) {
+  if (+checkUsername() & +checkEmail() & +checkPassword() & +checkPwdIsSame()) {
     onVerify.value = true;
     changeVerificationImg();
     return true;
@@ -192,14 +193,13 @@ async function register() {
   });
   loading.close();
   if (resp.success) {
-    cleanInfo();
     onVerify.value = false;
     ElNotification({
       title: '注册成功',
       message: resp.msg,
       type: 'success',
     });
-  } else if (!resp.success) {
+  } else {
     verificationCode.value = '';
     onVerify.value = false;
     ElNotification({
@@ -207,18 +207,30 @@ async function register() {
       message: resp.msg,
       type: 'warning',
     });
+  }
+}
+
+async function login() {
+  if (user.username == '' || user.password == ''){
+    ElMessage.warning("用户名或密码不能为空");
+    return;
+  }
+  const loading = ElLoading.service({
+    lock: true,
+    text: '正在登录中...',
+    spinner: 'el-icon-loading',
+    background: 'rgba(0, 0, 0, 0.7)'
+  });
+  const {data: resp} = await axios.post<Response>('/api/auth/login', user);
+  loading.close();
+  if (resp.success) {
+    router.push('/').then(() => ElMessage.success(resp.msg));
   } else {
-    verificationCode.value = '';
-    onVerify.value = false;
-    ElNotification({
-      title: '注册失败 ' + (resp.code || 'NO STATUS CODE'),
-      message: resp.msg || '未知错误<br>请稍后重试或尝试联系管理员',
-      type: 'error',
-    });
+    ElMessage.warning(resp.msg);
   }
 }
 </script>
 
-<style scoped>
-@import '@/assets/styles/sign.css';
+<style scoped lang="less">
+@import '@/assets/styles/sign.less';
 </style>
