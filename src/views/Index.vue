@@ -4,6 +4,6 @@
   <div class="index">
   </div>
 </template>
-<style scoped>
-@import url("../assets/styles/index.css");
+<style scoped lang="less">
+@import '../assets/styles/index.css';
 </style>

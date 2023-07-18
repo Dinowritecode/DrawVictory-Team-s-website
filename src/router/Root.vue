@@ -22,13 +22,14 @@ import {useRoute} from "vue-router";
 </template>
 
 <style scoped lang="less">
-.root{
+.root {
   position: absolute;
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
 }
+
 .header {
   top: 0;
   width: 100%;
@@ -36,19 +37,13 @@ import {useRoute} from "vue-router";
   background-color: #24292d;
   z-index: 100;
 }
-.router-view{
+
+.router-view {
   width: 100%;
   height: 100%;
   overflow: auto;
 }
-.router-view::-webkit-scrollbar{
-  width: 10px;
-  background-color: #f5dddd;
-}
-.router-view::-webkit-scrollbar-thumb{
-  background-color: #ff7675;
-  border-radius: 5px;
-}
+
 .logo {
   position: absolute;
   z-index: 100;
@@ -113,4 +108,23 @@ import {useRoute} from "vue-router";
   align-self: flex-end;
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  background-color: #727272;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #434343;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  border-radius: 10px;
+  transition: all .2s ease-in-out;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, .9)
+}
 </style>
