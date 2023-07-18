@@ -3,18 +3,18 @@ import {useRoute} from "vue-router";
 </script>
 
 <template>
-  <el-header class="header"><!--网页导航栏-->
-    <img class="logo" src="/logo_dark.svg" alt="logo">
-    <p class="name">DrawVictory Team</p>
-    <p class="name2">绘赢</p>
-    <el-menu mode="horizontal" class="menu" router text-color="#FF7675" background-color="#000000"
-             :default-active="useRoute().path">
-      <el-menu-item class="items" index="/">首页</el-menu-item>
-      <el-menu-item class="items" index="/404">介绍</el-menu-item>
-      <el-menu-item class="login-register" index="/register">登录/注册</el-menu-item>
-    </el-menu>
-  </el-header>
   <div class="root">
+    <el-header class="header"><!--网页导航栏-->
+      <img class="logo" src="/logo_dark.svg" alt="logo">
+      <p class="name">DrawVictory Team</p>
+      <p class="name2">绘赢</p>
+      <el-menu mode="horizontal" class="menu" router text-color="#FF7675" background-color="#000000"
+               :default-active="useRoute().path">
+        <el-menu-item class="items" index="/">首页</el-menu-item>
+        <el-menu-item class="items" index="/404">介绍</el-menu-item>
+        <el-menu-item class="login-register" index="/register">登录/注册</el-menu-item>
+      </el-menu>
+    </el-header>
     <router-view></router-view>
   </div>
 </template>
@@ -22,6 +22,7 @@ import {useRoute} from "vue-router";
 <style scoped>
 .header {
   position: fixed;
+  top: 0;
   width: 100%;
   height: 50px;
   background-color: #24292d;
@@ -61,10 +62,7 @@ import {useRoute} from "vue-router";
 .menu {
   position: absolute;
   height: 50px;
-//width: 500px; right: 0;
-  background-color: #24292d;
-  left: 250px;
-  border: none;
+//width: 500px; right: 0; background-color: #24292d; left: 250px; border: none;
 }
 
 .items {
