@@ -8,7 +8,7 @@ import {useRoute} from "vue-router";
       <img class="logo" src="/logo_dark.svg" alt="logo">
       <p class="name">DrawVictory Team</p>
       <p class="name2">绘赢</p>
-      <el-menu mode="horizontal" class="menu" router text-color="#FF7675" background-color="#000000"
+      <el-menu mode="horizontal" class="menu" router text-color="#FF7675" background-color="#24292d"
                :default-active="useRoute().path">
         <el-menu-item class="items" index="/">首页</el-menu-item>
         <el-menu-item class="items" index="/404">介绍</el-menu-item>
@@ -22,15 +22,33 @@ import {useRoute} from "vue-router";
 </template>
 
 <style scoped lang="less">
+.root{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .header {
-  position: fixed;
   top: 0;
   width: 100%;
   height: 50px;
   background-color: #24292d;
   z-index: 100;
 }
-
+.router-view{
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.router-view::-webkit-scrollbar{
+  width: 10px;
+  background-color: #f5dddd;
+}
+.router-view::-webkit-scrollbar-thumb{
+  background-color: #ff7675;
+  border-radius: 5px;
+}
 .logo {
   position: absolute;
   z-index: 100;
