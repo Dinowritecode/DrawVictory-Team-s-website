@@ -24,6 +24,7 @@
     filter: blur(10px);
     transform: scale(1.2);
 }
+/*文字*/
 .p1{
     position: absolute;
     z-index: 10;
