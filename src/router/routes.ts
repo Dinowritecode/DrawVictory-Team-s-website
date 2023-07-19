@@ -4,33 +4,33 @@ export default [
         name: '主页',
         meta: {title: 'DrawVictory Team｜绘赢'},
         alias: '/index',
-        component: () => import('../views/Index.vue')
+        component: () => import('@/views/Index.vue')
     },
     {
         path: '/404',
         name: '404',
         meta: {title: '404'},
-        component: () => import('../views/NotFound.vue')
+        component: () => import('@/views/NotFound.vue')
     },
     {
         path: '/register',
         name: 'register',
         meta: {title: '注册'},
         alias: '/signup',
-        component: () => import('../views/Sign.vue')
+        component: () => import('@/views/Sign.vue')
     },
     {
         path: '/login',
         name: 'login',
         meta: {title: '登录'},
         alias: '/signin',
-        component: () => import('../views/Sign.vue')
+        component: () => import('@/views/Sign.vue')
     },
     {
         path: '/activate',
         name: 'activate',
         meta: {title: '激活'},
-        component: () => import('../views/Activate.vue')
+        component: () => import('@/views/Activate.vue')
     },
     {
         path: '/test',
@@ -40,7 +40,7 @@ export default [
             requiresAuth: true,
             roles: ['admin']
         },
-        component: () => import('../views/Activate.vue')
+        component: () => import('@/views/Activate.vue')
     },
     {
         path: '/:pathMatcher(.*)*',

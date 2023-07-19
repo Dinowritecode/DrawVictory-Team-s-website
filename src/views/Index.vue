@@ -10,5 +10,5 @@
   </div>
 </template>
 <style scoped lang="less">
-@import '../assets/styles/index.css';
+@import '@/assets/styles/index.css';
 </style>
