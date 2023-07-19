@@ -33,6 +33,7 @@
                  @keydown.enter="login">
           <span>账户密码</span>
         </div>
+        <el-checkbox text-color="#ff7675">保持登录状态</el-checkbox>
         <button class="login sign_button" @click="login">登录</button>
         <a @click="isLogin=!isLogin;cleanInfo();useRouter().replace('/register')">没有账户？立即注册</a>
       </div>

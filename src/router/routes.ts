@@ -1,4 +1,4 @@
-export default [
+export default  [
     {
         path: '/',
         name: '主页',
