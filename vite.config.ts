@@ -47,4 +47,18 @@ export default defineConfig({
             }
         }
     },
+    build: {
+        chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vue: ['vue'],
+                    vuex: ['vuex'],
+                    axios: ['axios'],
+                    'vue-router': ['vue-router'],
+                    'element-plus': ['element-plus']
+                }
+            }
+        }
+    }
 })

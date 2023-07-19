@@ -1,4 +1,4 @@
-export default routes = [
+export default [
     {
         path: '/',
         name: '主页',

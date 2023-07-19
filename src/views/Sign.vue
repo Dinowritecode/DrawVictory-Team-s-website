@@ -34,7 +34,7 @@
           <span>账户密码</span>
         </div>
         <button class="login sign_button" @click="login">登录</button>
-        <a @click="isLogin=!isLogin;cleanInfo();this.$router.replace('/register')">没有账户？立即注册</a>
+        <a @click="isLogin=!isLogin;cleanInfo();useRouter().replace('/register')">没有账户？立即注册</a>
       </div>
     </transition>
     <transition name="el-fade-in">
@@ -85,7 +85,7 @@
           <p v-show="tips.diffPwd" class="tip">两次密码不一致</p>
         </div>
         <button class="reg sign_button" @click="verify">注册</button>
-        <a @click="isLogin=!isLogin;cleanInfo();this.$router.replace('/login')">已有账户？立即登录</a>
+        <a @click="isLogin=!isLogin;cleanInfo();useRouter().replace('/login')">已有账户？立即登录</a>
       </div>
     </transition>
   </div>
