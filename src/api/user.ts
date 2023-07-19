@@ -22,3 +22,7 @@ export function getUserPermissions(): Promise<string[]> {
 export function getLocalToken(): string | null {
     return localStorage.getItem('token');
 }
+
+export function removeLocalToken():void {
+    localStorage.removeItem('token');
+}

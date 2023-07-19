@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import {useRoute} from "vue-router";
+import {useStore} from "vuex";
+
+const state = useStore().state
+window.addEventListener('unload', () => sessionStorage.setItem('state', JSON.stringify(state)))
 </script>
 
 <template>
@@ -9,7 +12,7 @@ import {useRoute} from "vue-router";
       <p class="name">DrawVictory Team</p>
       <p class="name2">绘赢</p>
       <el-menu mode="horizontal" class="menu" router text-color="#FF7675" background-color="#24292d"
-               :default-active="useRoute().path">
+               :default-active="this.$route.path">
         <el-menu-item class="items" index="/">首页</el-menu-item>
         <el-menu-item class="items" index="/404">介绍</el-menu-item>
         <el-menu-item class="login-register" index="/register">登录/注册</el-menu-item>

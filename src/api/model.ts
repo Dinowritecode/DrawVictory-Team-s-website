@@ -1,68 +1,17 @@
-export interface RegUser {
-    [index: string]: string;
-
-    /** 用户名 */
-    username: string,
-    /** 用户密码 */
-    password: string
-    /** 用户邮箱 */
-    email: string
+export interface UserType {
+    uid?: bigint
+    username?: string
+    email?: string
+    roles?: string[]
+    permissions?: string[]
 }
 
-export class User {
-    private _uid: number;
-    private _username: string;
-    private _email: string;
-    private _roles: string[];
-    private _permissions: string[];
-
-    public get uid() {
-        return this._uid;
-    }
-
-    public set uid(uid: number) {
-        this._uid = uid;
-    }
-
-    public get username() {
-        return this._username;
-    }
-
-    public set username(username: string) {
-        this._username = username;
-    }
-
-    public get email() {
-        return this._email;
-    }
-
-    public set email(email: string) {
-        this._email = email;
-    }
-
-    public get roles() {
-        return this._roles;
-    }
-
-    public set roles(roles: string[]) {
-        this._roles = roles;
-    }
-
-    public get permissions() {
-        return this._permissions;
-    }
-
-    public set permissions(permissions: string[]) {
-        this._permissions = permissions;
-    }
-
-    constructor(uid: number, username: string, email: string, roles: string[], permissions: string[]) {
-        this._uid = uid;
-        this._username = username;
-        this._email = email;
-        this._roles = roles;
-        this._permissions = permissions;
-    }
+export class User implements UserType{
+    uid?: bigint;
+    username?: string;
+    email?: string;
+    roles?: string[];
+    permissions?: string[];
 }
 
 

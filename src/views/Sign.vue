@@ -34,7 +34,7 @@
           <span>账户密码</span>
         </div>
         <button class="login sign_button" @click="login">登录</button>
-        <a @click="isLogin=!isLogin;cleanInfo();router.replace('/register')">没有账户？立即注册</a>
+        <a @click="isLogin=!isLogin;cleanInfo();this.$router.replace('/register')">没有账户？立即注册</a>
       </div>
     </transition>
     <transition name="el-fade-in">
@@ -85,7 +85,7 @@
           <p v-show="tips.diffPwd" class="tip">两次密码不一致</p>
         </div>
         <button class="reg sign_button" @click="verify">注册</button>
-        <a @click="isLogin=!isLogin;cleanInfo();router.replace('/login')">已有账户？立即登录</a>
+        <a @click="isLogin=!isLogin;cleanInfo();this.$router.replace('/login')">已有账户？立即登录</a>
       </div>
     </transition>
   </div>
@@ -93,14 +93,16 @@
 
 <script lang="ts" setup>
 import {reactive, ref} from 'vue';
-import {RegUser, Response} from '../api/model'
+import {Response} from '../api/model'
 import axios from "../api/request";
-import {ElLoading, ElMessage, ElNotification} from 'element-plus'
+import {ElMessage, ElNotification} from 'element-plus'
 import {QuestionFilled} from "@element-plus/icons-vue";
 import {useRoute, useRouter} from "vue-router";
+import NProgress from 'nprogress';
 
 const isLogin = ref(useRoute().name === 'login');//注册界面or登录界面
-const user = reactive<RegUser>({username: "", password: "", email: ""});//提交的用户对象
+const user = reactive<{ username: string, password: string, email: string }>(
+  {username: "", password: "", email: ""});//提交的用户对象
 const confirmPassword = ref('');//重复输入的密码
 const verificationCode = ref('');//验证码
 const verificationId = ref('');//验证id
@@ -179,19 +181,14 @@ async function register() {
     ElMessage.warning('请正确输入验证码');
     return;
   }
-  const loading = ElLoading.service({
-    lock: true,
-    text: '注册中...',
-    spinner: 'el-icon-loading',
-    background: 'rgba(0, 0, 0, 0.7)'
-  });
+  NProgress.start();
   const {data: resp} = await axios.post<Response>('/api/users/register', user, {
     params: {
       verificationCode: verificationCode.value,
       verificationId: verificationId.value
     }
   });
-  loading.close();
+  NProgress.done();
   if (resp.success) {
     onVerify.value = false;
     ElNotification({
@@ -211,18 +208,13 @@ async function register() {
 }
 
 async function login() {
-  if (user.username == '' || user.password == ''){
+  if (user.username == '' || user.password == '') {
     ElMessage.warning("用户名或密码不能为空");
     return;
   }
-  const loading = ElLoading.service({
-    lock: true,
-    text: '正在登录中...',
-    spinner: 'el-icon-loading',
-    background: 'rgba(0, 0, 0, 0.7)'
-  });
+  NProgress.start();
   const {data: resp} = await axios.post<Response>('/api/auth/login', user);
-  loading.close();
+  NProgress.done();
   if (resp.success) {
     router.push('/').then(() => ElMessage.success(resp.msg));
   } else {
@@ -232,5 +224,5 @@ async function login() {
 </script>
 
 <style scoped lang="less">
-@import '@/assets/styles/sign.less';
+@import '@/assets/styles/sign.less' screen and (min-width: 768px);
 </style>

@@ -1,7 +1,15 @@
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import {createApp} from "vue";
-import Root from "./router/Root.vue";
-import router from "./router/router";
+import App from "./Application.vue";
+import router from "./router";
+import {createDeviceDetector} from 'next-vue-device-detector';
+import store from "./store";
+import 'nprogress/nprogress.css'
 
-createApp(Root).use(ElementPlus).use(router).mount('#app');
+createApp(App)
+    .use(ElementPlus)
+    .use(router)
+    .use(createDeviceDetector())
+    .use(store)
+    .mount('#app');
