@@ -1,9 +1,5 @@
 <script lang="ts" setup>
-import {useStore} from "vuex";
 import {useRoute} from "vue-router";
-
-const state = useStore().state
-// window.addEventListener('unload', () => sessionStorage.setItem('state', JSON.stringify(state)))
 </script>
 
 <template>

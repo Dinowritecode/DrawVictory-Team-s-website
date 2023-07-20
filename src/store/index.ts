@@ -1,14 +1,9 @@
-import {createStore} from 'vuex'
-import {UserType} from "../api/model";
-import state, {State} from './state'
+import {createPinia} from "pinia";
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import useUserStore from "./userStore";
 
-const getters = {
-    getUser(state: State): UserType {
-        return state.user;
-    }
-}
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 
-export default createStore({
-    state,
-    getters
-});
+export default pinia;
+export {useUserStore};

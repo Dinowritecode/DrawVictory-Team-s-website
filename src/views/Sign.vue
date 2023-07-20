@@ -216,6 +216,7 @@ async function login() {
   const {data: resp} = await axios.post<Response>('/api/auth/login', user);
   NProgress.done();
   if (resp.success) {
+    cleanInfo();
     router.push('/').then(() => ElMessage.success(resp.msg));
   } else {
     ElMessage.warning(resp.msg);

@@ -5,6 +5,7 @@ import {getLocalToken, getUserRole} from "../api/user";
 import NProgress from "nprogress";
 import routes from "./routes";
 
+NProgress.configure({showSpinner: false})
 const router = createRouter({
     history: createWebHistory(),
     routes: routes

@@ -15,7 +15,7 @@
     ],
     "skipLibCheck": true,
     "noEmit": true,
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
   "include": [
     "src/**/*.ts",
@@ -23,7 +23,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "./auto-imports.d.ts",
-    "./components.d.ts"
+    "./components.d.ts",
   ],
   "references": [
     {

@@ -1,5 +1,5 @@
 export interface UserType {
-    uid?: bigint
+    uid?: number
     username?: string
     email?: string
     roles?: string[]
@@ -7,7 +7,7 @@ export interface UserType {
 }
 
 export class User implements UserType {
-    uid?: bigint;
+    uid?: number;
     username?: string;
     email?: string;
     roles?: string[];
