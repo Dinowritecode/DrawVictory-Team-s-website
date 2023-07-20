@@ -25,17 +25,17 @@
       <div v-show="isLogin" class="login_frame frame">
         <p>登录</p>
         <div class="input_box">
-          <input v-model.trim="user.username" required autocomplete="username">
+          <input v-model.trim="user.username" autocomplete="username" required>
           <span>账户名称</span>
         </div>
         <div class="input_box">
-          <input v-model.trim="user.password" required type="password" autocomplete="current-password"
+          <input v-model.trim="user.password" autocomplete="current-password" required type="password"
                  @keydown.enter="login">
           <span>账户密码</span>
         </div>
         <el-checkbox text-color="#ff7675">保持登录状态</el-checkbox>
         <button class="login sign_button" @click="login">登录</button>
-        <a @click="isLogin=!isLogin;cleanInfo();useRouter().replace('/register')">没有账户？立即注册</a>
+        <a @click="isLogin=!isLogin;cleanInfo();router.replace('/register')">没有账户？立即注册</a>
       </div>
     </transition>
     <transition name="el-fade-in">
@@ -58,12 +58,12 @@
           </p>
         </div>
         <div class="input_box">
-          <input v-model.trim="user.email" required autocomplete="email" @blur="checkEmail">
+          <input v-model.trim="user.email" autocomplete="email" required @blur="checkEmail">
           <span>邮箱地址</span>
           <p v-show="tips.email" class="tip">邮箱格式错误，请确保您的邮箱为真实邮箱</p>
         </div>
         <div class="input_box">
-          <input v-model.trim="user.password" required autocomplete="new-password" type="password"
+          <input v-model.trim="user.password" autocomplete="new-password" required type="password"
                  @blur="checkPassword">
           <span>注册密码</span>
           <p v-show="tips.password" class="tip">密码格式错误
@@ -86,14 +86,13 @@
           <p v-show="tips.diffPwd" class="tip">两次密码不一致</p>
         </div>
         <button class="reg sign_button" @click="verify">注册</button>
-        <a @click="isLogin=!isLogin;cleanInfo();useRouter().replace('/login')">已有账户？立即登录</a>
+        <a @click="isLogin=!isLogin;cleanInfo();router.replace('/login')">已有账户？立即登录</a>
       </div>
     </transition>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from 'vue';
 import {Response} from '../api/model'
 import axios from "../api/request";
 import {ElMessage, ElNotification} from 'element-plus'
@@ -224,6 +223,6 @@ async function login() {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 @import '@/assets/styles/sign.less' screen and (min-width: 768px);
 </style>
