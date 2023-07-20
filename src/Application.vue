@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import {useStore} from "vuex";
+import {useRoute} from "vue-router";
 
 const state = useStore().state
 // window.addEventListener('unload', () => sessionStorage.setItem('state', JSON.stringify(state)))
@@ -8,11 +9,11 @@ const state = useStore().state
 <template>
   <div class="root">
     <el-header class="header"><!--网页导航栏-->
-      <img alt="logo" class="logo" src="/logo_dark.svg">
+      <img class="logo" src="/logo_dark.svg" alt="logo">
       <p class="name">DrawVictory Team</p>
       <p class="name2">绘赢</p>
-      <el-menu :default-active="this.$route.path" background-color="#24292d" class="menu" mode="horizontal" router
-               text-color="#FF7675">
+      <el-menu mode="horizontal" class="menu" router text-color="#FF7675" background-color="#24292d"
+               :default-active="useRoute().path">
         <el-menu-item class="items" index="/">首页</el-menu-item>
         <el-menu-item class="items" index="/404">介绍</el-menu-item>
         <el-menu-item class="login-register" index="/register">登录/注册</el-menu-item>
@@ -24,7 +25,7 @@ const state = useStore().state
   </div>
 </template>
 
-<style lang="less" scoped>
+<style scoped lang="less">
 .root {
   position: absolute;
   height: 100%;

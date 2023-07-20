@@ -8,7 +8,7 @@ import store from "./store";
 import 'nprogress/nprogress.css'
 
 createApp(App)
-    .use(ElementPlus, {size: 'default'})
+    .use(ElementPlus)
     .use(router)
     .use(createDeviceDetector())
     .use(store)
