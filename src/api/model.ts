@@ -6,7 +6,7 @@ export interface UserType {
     permissions?: string[]
 }
 
-export class User implements UserType{
+export class User implements UserType {
     uid?: bigint;
     username?: string;
     email?: string;
