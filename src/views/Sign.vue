@@ -83,7 +83,7 @@
           <input v-model.trim="confirmPassword" required type="password" @blur="checkPwdIsSame"
                  @keydown.enter="verify">
           <span>确认密码</span>
-          <p v-show="tips.diffPwd" class="tip">两次密码不一致</p>
+          <p v-show="tips.confirmPassword" class="tip">两次密码不一致</p>
         </div>
         <button class="reg sign_button" @click="verify">注册</button>
         <a @click="isLogin=!isLogin;cleanInfo();router.replace('/login')">已有账户？立即登录</a>
@@ -107,7 +107,7 @@ const confirmPassword = ref('');//重复输入的密码
 const verificationCode = ref('');//验证码
 const verificationId = ref('');//验证id
 const verificationImg = ref('');//验证码图片
-const tips = reactive({username: false, password: false, email: false, diffPwd: false});//各个错误提示是否显示
+const tips = reactive({username: false, password: false, email: false, confirmPassword: false});//各个错误提示是否显示
 const onVerify = ref(false);//是否打开验证码界面
 const router = useRouter();
 

@@ -13,5 +13,7 @@ createApp(App)
     .use(createDeviceDetector())
     .use(pinia)
     .mount('#app');
+
 if (!sessionStorage.getItem('user_store_cache'))
     useUserStore().fetch().then();
+else useUserStore();

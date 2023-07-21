@@ -12,7 +12,7 @@ import {useRoute} from "vue-router";
                text-color="#FF7675">
         <el-menu-item class="items" index="/">首页</el-menu-item>
         <el-menu-item class="items" index="/404">介绍</el-menu-item>
-        <el-menu-item class="login-register" index="/register">登录/注册</el-menu-item>
+        <el-menu-item class="login-register" index="/login">登录/注册</el-menu-item>
       </el-menu>
     </el-header>
     <div class="router-view">

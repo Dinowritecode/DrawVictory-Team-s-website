@@ -18,7 +18,7 @@
 }
 
 .background-img {
-    background-image: url(../imagine/earth.jpg);
+    background-image: url(@/assets/img/earth.jpg);
     height: 500px;
     width: 100%;
     background-position: center;
