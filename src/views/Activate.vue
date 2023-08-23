@@ -17,6 +17,7 @@
 <script lang="ts" setup>
 import axios from "../api/request";
 import {Code, Response} from "../api/model";
+import Cropper from "../component/Cropper.vue";
 
 const msg = ref('激活中..');
 const isSuccess = ref(false);//是否激活成功

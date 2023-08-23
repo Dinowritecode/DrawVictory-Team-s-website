@@ -3,7 +3,8 @@ import {useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
 import {Code} from "./model";
 
-const _axios = axios.create({});
+const _axios = axios.create({
+})
 _axios.interceptors.response.use(
     response => {
         const token: string = response.headers['authorization']

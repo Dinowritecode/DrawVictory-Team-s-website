@@ -20,12 +20,14 @@
     "pinia-plugin-persistedstate": "^3.1.0",
     "vue": "^3.3.4",
     "vue-cropper": "^1.0.5",
+    "vue-cropperjs": "^5.0.0",
     "vue-request": "^2.0.3",
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.2",
     "@types/nprogress": "^0.2.0",
+    "@types/vue-cropperjs": "^4.1.2",
     "@vitejs/plugin-legacy": "^4.1.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "autoprefixer": "^10.4.14",
