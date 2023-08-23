@@ -8,7 +8,7 @@
     <transition name="el-fade-in">
       <div v-if="starting" id="setting">
         <p @click="starting=false">×</p>
-
+        <Cropper></Cropper>
       </div>
     </transition>
   </div>
