@@ -37,10 +37,11 @@ export default [
         name: 'test',
         meta: {
             title: 'test',
-            requiresAuth: true,
-            roles: ['admin']
+            // requiresAuth: true,
+            // roles: ['admin']
         },
-        component: () => import('@/views/Activate.vue')
+        // component: () => import('@/components/CustomCropper.vue')
+        component: () => import('@/views/Test.vue')
     },
     {
         path: '/:pathMatcher(.*)*',
